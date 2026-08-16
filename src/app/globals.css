@@ -1,0 +1,747 @@
+@import "tailwindcss";
+@import "@clerk/ui/themes/shadcn.css";
+
+@layer base {
+  /*
+   * Tailwind v4 dropped the `cursor: pointer` that v3's preflight put on
+   * buttons, so every <button> in the app fell back to the arrow cursor and
+   * stopped reading as clickable — the booking flow's cards and its
+   * Continue/Back/Submit buttons among them.
+   *
+   * Restored here rather than pinned to each element: several components had
+   * already started adding `cursor-pointer` by hand, which only fixes the ones
+   * someone remembered. Those utilities still win over this, so they are
+   * harmless where they remain.
+   *
+   * `:disabled` is excluded so the booking flow's `disabled:cursor-not-allowed`
+   * is not fighting a base rule for the same property.
+   */
+  button:not(:disabled),
+  summary,
+  [role="button"]:not([aria-disabled="true"]),
+  input[type="file"] {
+    cursor: pointer;
+  }
+
+  /* The file input's own "Choose file" button is a shadow-DOM pseudo-element
+     and does not inherit the cursor from the input above. */
+  input[type="file"]::file-selector-button {
+    cursor: pointer;
+  }
+}
+
+@theme {
+  /*
+   * Palette lifted from the Figma file "Salon Website (Community)".
+   * Full extracted set lives in setup/tokens/SUMMARY.md — these are the ones
+   * the header actually uses.
+   */
+  --color-blush: #fccab8; /* outline buttons, Classes hover, Intro mosaic dots */
+  /* The nav and its CTAs deliberately do NOT use blush: they are set in
+     --color-accent (the theme green, defined with the About Us tokens).
+     Blush is still the palette everywhere else on the page. */
+  --color-deep: #230a01; /* text on blush; also the hero scrim at 40% */
+  --color-ember: #f78c65; /* active-link underline (Figma 97:996) */
+  --color-shell: #f6ebe7; /* Figma neutral-100 — Follow Us and footer bands */
+  --color-coral: #f9ad91; /* Figma orange-200 — detail inside the contact icons */
+  --color-flame: #ff8e67; /* Figma `lin` gradient end — badge ring, gradient rule */
+
+  /*
+   * The hero comes from a different Figma file — "Landing Page Salon
+   * (Community)" `zm0j05f39X27Tb9CLG73LT`, frame `3:202` — which has its own
+   * palette. Kept separate from the blush set above rather than merged, so
+   * replacing another section from either file stays a local change.
+   */
+  --color-gold: #fbb034; /* CTA fill, active nav link, eyebrow (3:204/209/210) */
+  --color-ash: #9a9a9a; /* hero body copy (3:214) */
+  /* 3:217 paints two translucent tints over the cape watermark, in this order. */
+  --color-mark-shade: #46495566;
+  --color-mark-shade-soft: #4c4f5b1a;
+}
+
+@theme inline {
+  --font-sans: var(--font-jost);
+  --font-display: var(--font-kiwi-maru);
+  --font-brand: var(--font-poppins); /* Poppins — the landing-page hero's face */
+}
+
+body {
+  background: #ffffff;
+  color: var(--color-deep);
+  font-family: var(--font-sans);
+}
+
+/* =================================================================
+   KINETIC NAVIGATION
+   Ported from the devis-gym demo's globals.css. Same class names and
+   same geometry — the GSAP selectors in components/kinetic-nav.tsx
+   target them. Recoloured from lime/black/Oswald to blush/deep/Jost.
+   ================================================================= */
+
+.site-header-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 60;
+  pointer-events: none;
+  /* Fully transparent — the bar sits over the hero with no tint of its own. */
+  background: transparent;
+  transition: background 0.3s ease;
+}
+
+/* Fixed below xl, where the panel is the only way to reach the links. */
+@media (max-width: 1279px) {
+  .site-header-wrapper {
+    position: fixed;
+  }
+}
+
+.site-header-wrapper.scrolled {
+  background: transparent;
+  backdrop-filter: blur(10px);
+}
+
+.header {
+  padding: 1.5rem 0;
+  pointer-events: none;
+  background: transparent;
+}
+
+.container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 2rem;
+  background: transparent;
+}
+
+.container.is--full {
+  max-width: 100%;
+}
+
+.nav-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+}
+
+.nav-logo-row {
+  pointer-events: auto;
+  text-decoration: none;
+  color: #ffffff;
+  transition: opacity 0.3s ease;
+}
+
+.nav-logo-row:hover {
+  opacity: 0.8;
+}
+
+.logo-text {
+  display: block;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: 5.04px; /* the wordmark's Figma tracking (97:988) */
+}
+
+/* Desktop horizontal navigation */
+.desktop-nav {
+  align-items: center;
+  gap: 2rem;
+  pointer-events: auto;
+}
+
+.desktop-nav-list {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.desktop-nav-item {
+  position: relative;
+}
+
+.desktop-nav-link {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 0.5rem 0;
+  transition: color 0.3s ease;
+}
+
+/* -----------------------------------------------------------------
+   Hover and active: a green rule under the link, not green text.
+
+   Drawn as a pseudo-element rather than `text-decoration`, for two
+   reasons: it can be given its own thickness and distance from the
+   baseline, and it can grow from the left instead of appearing all at
+   once. `scaleX` is used rather than `width` so the growth runs on the
+   compositor and does not lay the bar out again on every frame.
+
+   The link's own colour is left alone here, which is the point — it
+   stays white over the hero and near-black once the bar turns white,
+   and only the rule underneath is green.
+   ----------------------------------------------------------------- */
+
+.desktop-nav-link,
+.desktop-nav a:not(.nav-cta) {
+  position: relative;
+}
+
+.desktop-nav-link::after,
+.desktop-nav a:not(.nav-cta)::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--color-accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.28s ease;
+}
+
+.desktop-nav-link:hover::after,
+.desktop-nav-link:focus-visible::after,
+.desktop-nav-link.active::after,
+.desktop-nav a:not(.nav-cta):hover::after,
+.desktop-nav a:not(.nav-cta):focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* The active link keeps its rule permanently, so it is not mistaken for
+   whatever the pointer happens to be over. Listed for both selectors:
+   "Your status" is an <a> in the bar but not a `.desktop-nav-link`, and it
+   carries the same class when its page is open. */
+.desktop-nav-link.active::after,
+.desktop-nav a:not(.nav-cta).active::after {
+  transform: scaleX(1);
+}
+
+/* Sits where the demo put its music/sound toggles. */
+.nav-cta {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  width: 182px;
+  background: var(--color-accent);
+  color: var(--color-deep);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+}
+
+.nav-cta:hover {
+  opacity: 0.9;
+}
+
+/* No `display` here on purpose — this rule loads after Tailwind's utilities, so
+   declaring one would beat the `xl:hidden` on the element and leave the burger
+   visible on desktop. The element carries `flex` as a utility instead. */
+.nav-row__right {
+  align-items: center;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+
+/* Menu button */
+.nav-close-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  color: #ffffff;
+  pointer-events: auto;
+  transition: color 0.3s ease;
+}
+
+.nav-close-btn:hover {
+  color: var(--color-accent);
+}
+
+.icon-wrap {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-button-icon {
+  width: 100%;
+  height: 100%;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menu-button-icon.cross-icon {
+  color: var(--color-accent);
+  transform: scale(1.2);
+}
+
+.menu-button-icon.cross-icon line {
+  stroke: var(--color-accent);
+  stroke-width: 3;
+}
+
+.nav-close-btn:hover .menu-button-icon.hamburger-icon {
+  transform: scale(1.1);
+}
+
+/* Fullscreen menu */
+.fullscreen-menu-container {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  pointer-events: none;
+}
+
+.nav-overlay-wrapper {
+  position: absolute;
+  inset: 0;
+  display: none;
+  pointer-events: none;
+}
+
+.nav-overlay-wrapper[data-nav="open"] {
+  pointer-events: auto;
+  display: block;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(35, 10, 1, 0.75);
+  backdrop-filter: blur(2px);
+  cursor: pointer;
+}
+
+.menu-content {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  max-width: 600px;
+  height: 100vh;
+  background: linear-gradient(
+    135deg,
+    rgba(45, 16, 5, 0.98) 0%,
+    rgba(24, 7, 1, 0.98) 100%
+  );
+  backdrop-filter: blur(10px);
+  box-shadow: -10px 0 50px rgba(35, 10, 1, 0.5);
+}
+
+@media (max-width: 768px) {
+  .menu-content {
+    max-width: 85%;
+  }
+}
+
+.menu-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* The demo also sets `transform: translateX(101%)` here as a resting state.
+   Left out on purpose: GSAP reads that as a 334px base x-offset and the open
+   tween only animates xPercent, so the layers settle a full panel-width off to
+   the right and never appear. The timeline's `fromTo` supplies the start state
+   anyway, and the wrapper is display:none until it runs. */
+.backdrop-layer {
+  position: absolute;
+  inset: 0;
+  background: #180701;
+}
+
+.backdrop-layer.first {
+  background: linear-gradient(135deg, #2d1005 0%, #180701 100%);
+}
+
+.backdrop-layer.second {
+  background: linear-gradient(135deg, #43190a 0%, #2d1005 100%);
+}
+
+/* Ambient background shapes */
+.ambient-background-shapes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bg-shape {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.bg-shape.active {
+  opacity: 1;
+}
+
+.shape-element {
+  transform-origin: center;
+}
+
+.menu-content-wrapper {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  z-index: 2;
+}
+
+@media (min-width: 768px) {
+  .menu-content-wrapper {
+    padding: 3rem 2rem;
+  }
+}
+
+.sidebar-logo-container {
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 2rem;
+  padding: 0 1rem;
+}
+
+.sidebar-logo-link {
+  text-decoration: none;
+  display: block;
+}
+
+.sidebar-logo-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-bottom: 2px solid rgba(199, 255, 61, 0.3);
+  transition: border-color 0.3s ease;
+}
+
+.sidebar-logo-link:hover .sidebar-logo-content {
+  border-color: var(--color-accent);
+}
+
+.sidebar-logo-text {
+  color: #ffffff;
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  font-weight: 700;
+  letter-spacing: 5.04px;
+  transition: color 0.3s ease;
+}
+
+.sidebar-logo-link:hover .sidebar-logo-text {
+  color: var(--color-accent);
+}
+
+.menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 500px;
+}
+
+.menu-list-item {
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+}
+
+.nav-link {
+  position: relative;
+  display: block;
+  padding: 1rem 2rem;
+  text-decoration: none;
+  color: #ffffff;
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--color-accent);
+}
+
+.nav-link-text {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+}
+
+.nav-link-hover-bg {
+  position: absolute;
+  inset: 0;
+  background: rgba(199, 255, 61, 0.12);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.65, 0.01, 0.05, 0.99);
+  z-index: 1;
+}
+
+.nav-link:hover .nav-link-hover-bg {
+  transform: scaleX(1);
+}
+
+/* Replaces the demo's sidebar sound controls. */
+.sidebar-cta-container {
+  width: 100%;
+  max-width: 500px;
+  margin-top: 2rem;
+  padding: 1.5rem 1rem 0;
+  border-top: 2px solid rgba(199, 255, 61, 0.3);
+}
+
+.sidebar-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  width: 100%;
+  max-width: 216px;
+  background: var(--color-accent);
+  color: var(--color-deep);
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar-cta:hover {
+  opacity: 0.9;
+}
+
+@media (max-width: 640px) {
+  .header {
+    padding: 1rem 0;
+  }
+
+  .container {
+    padding: 0 1rem;
+  }
+
+  .nav-link {
+    padding: 0.75rem 1rem;
+    font-size: clamp(1.8rem, 8vw, 3rem);
+  }
+}
+
+/* =================================================================
+   ABOUT US
+   app/about-us is a port of the devis-gym demo's about page, which is
+   dark with a lime accent rather than blush-on-white. These are the
+   demo's tokens and layout helpers, values unchanged.
+
+   All of it is additive — none of these names is used by any other
+   page, so the two palettes coexist instead of overriding each other.
+   ================================================================= */
+
+@theme {
+  --color-background: #0a0a0a;
+  --color-background-elevated: #121212;
+  --color-muted: #9a9892;
+  --color-accent: #c7ff3d;
+}
+
+/* The demo's page gutter: 20px, widening at md and xl. */
+.container-edge {
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
+  padding-inline: 20px;
+}
+
+@media (max-width: 640px) {
+  .container-edge {
+    padding-inline: 16px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container-edge {
+    padding-inline: 40px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container-edge {
+    padding-inline: 64px;
+  }
+}
+
+/*
+ * `--font-oswald` is set by app/about-us/layout.tsx, so these resolve inside
+ * that route only. Gotham is not licensed here — as in the demo, it is a name
+ * at the head of the stack that always falls through to what follows.
+ */
+.font-oswald {
+  font-family: var(--font-oswald), "Impact", sans-serif;
+}
+
+.font-gotham-condensed {
+  font-family: "Gotham Condensed", var(--font-oswald), "Impact", "Arial Narrow",
+    sans-serif;
+}
+
+.font-gotham {
+  font-family: "Gotham", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+/* =================================================================
+   shadcn/ui tokens
+   The components in components/ui expect these names. Only the ones
+   that did not already exist are declared here — `--color-accent`,
+   `--color-background` and `--color-muted` are the salon's own and are
+   deliberately left alone:
+
+     accent      is this site's green (#c7ff3d), used by the nav, the
+                 hero buttons and the footer. shadcn treats `accent` as
+                 a hover wash, so pairing it with a dark
+                 `accent-foreground` below keeps those hovers on-brand
+                 rather than unreadable.
+     background  already means the same thing in both systems.
+     muted       is a text grey here; the components only ever use
+                 `text-muted-foreground`, never `bg-muted`, so there is
+                 no clash.
+
+   `primary` is mapped to the green, so a plain shadcn <Button> comes
+   out in the site's colour with no extra classes.
+   ================================================================= */
+
+@theme {
+  --color-foreground: #ffffff;
+
+  --color-card: #101010;
+  --color-card-foreground: #ffffff;
+
+  --color-popover: #141414;
+  --color-popover-foreground: #ffffff;
+
+  --color-primary: #c7ff3d;
+  --color-primary-foreground: #0a0a0a;
+
+  --color-secondary: #1c1c1c;
+  --color-secondary-foreground: #ffffff;
+
+  --color-muted-foreground: #a1a1a1;
+  --color-accent-foreground: #0a0a0a;
+
+  --color-destructive: #f87171;
+
+  --color-border: rgba(255, 255, 255, 0.14);
+  --color-input: rgba(255, 255, 255, 0.18);
+  --color-ring: #c7ff3d;
+}
+
+/* -----------------------------------------------------------------
+   Bare shadcn variables, for consumers outside Tailwind.
+
+   The @theme block above declares `--color-card`, `--color-primary`
+   and so on, which is what Tailwind v4 needs to emit `bg-card` /
+   `text-primary` utilities. It does NOT declare `--card` or
+   `--primary`.
+
+   Clerk's shadcn theme (@clerk/ui/themes/shadcn) reads the bare
+   names — `var(--card)`, `var(--primary)`, `var(--ring)` and the
+   rest. With them undefined every colour fell back to Clerk's own
+   default, which rendered near-black text on the near-black page:
+   the sign-in form was there but unreadable.
+
+   Declared here rather than by rewriting the @theme block above, so
+   the two systems stay independent: the Tailwind utilities keep the
+   values they already had, and these exist purely for anything that
+   reads plain CSS custom properties.
+
+   `--muted` is deliberately a dark SURFACE here, while the Tailwind
+   `--color-muted` above is a light TEXT grey. Clerk uses this one as
+   a panel background; nothing reads both.
+   ----------------------------------------------------------------- */
+
+:root {
+  --background: #0a0a0a;
+  --foreground: #ffffff;
+
+  --card: #121212;
+  --card-foreground: #ffffff;
+
+  --popover: #141414;
+  --popover-foreground: #ffffff;
+
+  --primary: #c7ff3d;
+  --primary-foreground: #0a0a0a;
+
+  --secondary: #1c1c1c;
+  --secondary-foreground: #ffffff;
+
+  --muted: #1e1e1e;
+  --muted-foreground: #a6a6a6;
+
+  --accent: #c7ff3d;
+  --accent-foreground: #0a0a0a;
+
+  --destructive: #f87171;
+
+  --border: rgba(255, 255, 255, 0.16);
+  --input: rgba(255, 255, 255, 0.22);
+  --ring: #c7ff3d;
+}
+
+/* -----------------------------------------------------------------
+   Scrollable dialog body
+
+   The scrollbar is hidden outright rather than styled: the modal
+   already says there is more below, with the animated "Scroll" hint
+   at its foot, so the bar is a second answer to a question already
+   answered.
+
+   Hidden, not disabled — the box still scrolls by wheel, trackpad,
+   touch, arrow keys and Page Down. `overflow-y: auto` stays; only
+   the painting of the bar is suppressed.
+
+   `overscroll-behavior: contain` is the load-bearing line. Without
+   it, reaching the end of the modal hands the wheel to the page
+   behind it, so the last flick of a scroll drags the whole site
+   under an open dialog.
+   ----------------------------------------------------------------- */
+
+.salon-scroll {
+  overscroll-behavior: contain;
+  /* Firefox */
+  scrollbar-width: none;
+  /* Old Edge/IE */
+  -ms-overflow-style: none;
+}
+
+/* Chrome, Safari, new Edge. `display: none` removes the track, the
+   thumb and the stepper arrows in one go. */
+.salon-scroll::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
