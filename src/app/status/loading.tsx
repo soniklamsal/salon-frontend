@@ -6,7 +6,7 @@ export default function StatusLoading() {
   return (
     <main className="flex-1 bg-[#0a0a0a]">
       <LoadingLabel what="your bookings" />
-      <div className="mx-auto w-full max-w-[1100px] px-5 pt-28 pb-20 sm:px-8 sm:pt-32 md:pt-40 md:pb-28">
+      <div className="mx-auto w-full max-w-[1100px] px-5 below-header pb-20 sm:px-8 md:pb-28">
         <PageHeaderSkeleton />
         <div aria-hidden className="border-border mt-10 rounded-xl border">
           {Array.from({ length: 4 }).map((_, i) => (

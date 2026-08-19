@@ -35,7 +35,7 @@ export default async function StatusPage() {
 
   return (
     <main className="flex-1 bg-[#0a0a0a]">
-      <div className="mx-auto w-full max-w-[1100px] px-5 pt-28 pb-20 sm:px-8 sm:pt-32 md:pt-40 md:pb-28">
+      <div className="mx-auto w-full max-w-[1100px] px-5 below-header pb-20 sm:px-8 md:pb-28">
         <BackButton />
 
         <h1 className="text-foreground text-[clamp(32px,7vw,60px)] leading-[1.05] font-bold">

@@ -43,6 +43,8 @@ export type SocialLink = {
 };
 
 export type SiteSettings = {
+  /** Empty when no logo is set — the header falls back to `brandName` then. */
+  logo: string;
   brandName: string;
   badgeCaption: string;
   metaTitle: string;
@@ -172,17 +174,6 @@ export type FollowUsContent = {
   body: string;
 };
 
-export type ContactIconKey = "phone" | "clock" | "pin";
-
-export type ContactColumn = {
-  id: number;
-  heading: string;
-  icon: ContactIconKey;
-  /** Split server-side: the design's line breaks set each column's width. */
-  lines: string[];
-  order: number;
-};
-
 export type FooterContent = {
   /** Three lines because each animates independently in the footer. */
   headingLine1: string;
@@ -208,7 +199,6 @@ export type SiteContent = {
   ourStory: OurStoryContent;
   asSeenOn: AsSeenOnContent;
   followUs: FollowUsContent;
-  contactColumns: ContactColumn[];
   footer: FooterContent;
 };
 

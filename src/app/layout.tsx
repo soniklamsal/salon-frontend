@@ -121,6 +121,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <KineticNav
           links={navLinks}
           cta={site.navCta}
+          logo={site.logo}
           brandName={site.brandName}
           social={socialLinks}
         />

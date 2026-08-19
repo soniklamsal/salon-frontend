@@ -1,8 +1,14 @@
+import Image from "next/image";
+
 import { BadgeRingIcon } from "@/components/shared/story-art";
 
 /**
- * The circular SALON badge — a ring, the wordmark, and a caption set around
+ * The circular SALON badge — a ring, the brand mark, and a caption set around
  * the outside of it.
+ *
+ * The mark in the middle follows the same rule the header does: the logo from
+ * Site settings when one is uploaded, the brand name as text when not. There is
+ * no flag for it — a non-empty `logo` is the switch.
  *
  * It appears twice on the home page, at the same 338x298 size but in two
  * different rings, so the ring is the one thing that varies:
@@ -19,7 +25,9 @@ import { BadgeRingIcon } from "@/components/shared/story-art";
 type SalonBadgeProps = {
   className?: string;
   ring?: "story" | "footer";
-  /** `SiteSettings.brandName` — the wordmark inside the ring. */
+  /** `SiteSettings.logo`. Replaces the wordmark inside the ring when set. */
+  logo: string;
+  /** `SiteSettings.brandName` — the wordmark inside the ring, and the logo's alt. */
   brandName: string;
   /** `SiteSettings.badgeCaption` — set around the outside of the ring. */
   caption: string;
@@ -28,6 +36,7 @@ type SalonBadgeProps = {
 export function SalonBadge({
   className,
   ring = "story",
+  logo,
   brandName,
   caption,
 }: SalonBadgeProps) {
@@ -89,10 +98,27 @@ export function SalonBadge({
         </text>
       </svg>
 
-      {/* 97:1117 — SALON, optically centred in the ring */}
-      <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[30px] font-bold leading-[54.9px] tracking-[7.6px] text-white sm:text-[38px]">
-        {brandName}
-      </span>
+      {/* 97:1117 — the mark, optically centred in the ring */}
+      {logo ? (
+        /*
+          Sized as a box rather than a square so both shapes of upload work:
+          `object-contain` fills the width for a wide wordmark and the height
+          for a square mark, and never crops either. 46%x30% of the badge is
+          the largest such box that still clears the ring's inner edge at the
+          corners, given the mark sits slightly above the ring's centre.
+        */
+        <Image
+          src={logo}
+          alt={brandName}
+          width={220}
+          height={110}
+          className="absolute left-1/2 top-1/2 h-[30%] w-[46%] -translate-x-1/2 -translate-y-1/2 object-contain"
+        />
+      ) : (
+        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[30px] font-bold leading-[54.9px] tracking-[7.6px] text-white sm:text-[38px]">
+          {brandName}
+        </span>
+      )}
     </div>
   );
 }

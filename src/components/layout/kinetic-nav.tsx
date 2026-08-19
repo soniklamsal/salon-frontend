@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { CustomEase } from "gsap/CustomEase";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -22,12 +23,24 @@ import type { CtaLink, NavLink, SocialLink } from "@/lib/types/content-types";
  *
  * What differs from the demo, all of it styling rather than behaviour:
  *   - blush/deep/Jost instead of lime/black/Oswald (see globals.css)
- *   - the SALON wordmark instead of a logo image
+ *   - the wordmark or a logo image, whichever the CMS holds: uploading a logo
+ *     in Site settings replaces the text in both the bar and the mobile menu,
+ *     and clearing it brings the text back. The demo only ever had the image.
  *   - the demo's music and sound-effect toggles are gone; this project has no
  *     SoundManager and no audio to toggle. The Book Now CTA sits where they did.
  *
  * The class names are the demo's because the GSAP selectors target them.
  */
+
+/*
+ * The header's logo box, mirroring `--nav-logo-*` in globals.css. Only
+ * `next/image`'s srcset hint is taken from here — the drawn size is the
+ * stylesheet's, which is what lets the phone height differ. They are fixed
+ * rather than editable because the header's height is what every page reserves
+ * space for; see `--header-height`.
+ */
+const LOGO_HEIGHT = 96;
+const LOGO_MAX_WIDTH = 360;
 
 // Register GSAP plugins safely
 if (typeof window !== "undefined") {
@@ -38,6 +51,8 @@ type KineticNavProps = {
   /** `core.NavLink` filtered to `show_in_header`. */
   links: NavLink[];
   cta: CtaLink;
+  /** `core.SiteSettings.logo`, "" when none is uploaded. */
+  logo: string;
   brandName: string;
   /** `core.SocialLink`, same list the footer uses. */
   social: SocialLink[];
@@ -69,7 +84,13 @@ function activeIndex(links: NavLink[], pathname: string): number {
   return best;
 }
 
-export function KineticNav({ links, cta, brandName, social }: KineticNavProps) {
+export function KineticNav({
+  links,
+  cta,
+  logo,
+  brandName,
+  social,
+}: KineticNavProps) {
   const pathname = usePathname();
   const current = activeIndex(links, pathname);
   // The parent container scopes every GSAP selector below.
@@ -266,7 +287,22 @@ export function KineticNav({ links, cta, brandName, social }: KineticNavProps) {
                 aria-label={`${brandName} — home`}
                 className="nav-logo-row block"
               >
-                <span className="logo-text">{brandName}</span>
+                {logo ? (
+                  /* Intrinsic size is unknown — the CMS accepts any file — so
+                     these are the optimiser's srcset hint, matching the box
+                     `--nav-logo-*` draws it in. The rendered size comes from
+                     globals.css. */
+                  <Image
+                    src={logo}
+                    alt=""
+                    width={LOGO_MAX_WIDTH}
+                    height={LOGO_HEIGHT}
+                    priority
+                    className="logo-image"
+                  />
+                ) : (
+                  <span className="logo-text">{brandName}</span>
+                )}
               </Link>
 
               {/* Spacer that pushes the burger right below xl */}
@@ -430,7 +466,19 @@ export function KineticNav({ links, cta, brandName, social }: KineticNavProps) {
               <div className="sidebar-logo-container">
                 <Link href="/" onClick={closeMenu} className="sidebar-logo-link">
                   <div className="sidebar-logo-content">
-                    <span className="sidebar-logo-text">{brandName}</span>
+                    {logo ? (
+                      /* This link carries no aria-label of its own, so unlike
+                         the header's the alt text has to name the salon. */
+                      <Image
+                        src={logo}
+                        alt={brandName}
+                        width={LOGO_MAX_WIDTH}
+                        height={LOGO_HEIGHT}
+                        className="sidebar-logo-image"
+                      />
+                    ) : (
+                      <span className="sidebar-logo-text">{brandName}</span>
+                    )}
                   </div>
                 </Link>
               </div>

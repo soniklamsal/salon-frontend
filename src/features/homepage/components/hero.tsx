@@ -186,11 +186,14 @@ export function Hero({ content }: { content: HeroContent }) {
           The nav used to sit here in flow (`LandingNav`). It has been replaced
           by the kinetic header ported from the devis-gym demo, which paints
           over this band from app/layout.tsx rather than inside it — so all that
-          is left here is the height it occupied. The 105 is what the vertical
-          rhythm documented above is measured against; below xl the header's own
-          bar is 74 tall.
+          is left here is the height it occupied. The 105 the vertical rhythm
+          documented above is measured against, and the 74 below xl, are now the
+          *floor* inside `--header-height` rather than the whole story: the logo
+          is sized in the admin, and a tall one makes the bar deeper than either
+          number. Reserving the variable is what stops it landing on the
+          headline.
         */}
-        <div aria-hidden className="h-[74px] shrink-0 xl:h-[105px]" />
+        <div aria-hidden className="h-[var(--header-height)] shrink-0" />
 
         {/*
           Copy and photo share one row below xl. At xl the wrapper goes

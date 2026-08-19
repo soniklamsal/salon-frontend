@@ -44,19 +44,47 @@ import { prefersReducedMotion } from "@/lib/motion";
  *     would leave the copy at opacity 0 behind an unopened grid, so the
  *     `motion-reduce:` variants below drop the section into plain flow —
  *     copy first, grid beneath it, nothing overlapping;
- *   - the heights are the demo's from `md` up only. The demo pairs a
- *     `min-h-screen` section with a `min-h-[150vh]` card layer, which centres
- *     the grid ~633px down and leaves the whole top of the band empty. On a
- *     390x844 phone that read as ~363px of dead black between Motivation
- *     Lines and this heading. Below `md` both heights scale down together
- *     (55svh/70svh) and the padding with them.
+ *   - the demo's viewport-height sizing is gone. It pinned a `min-h-screen`
+ *     section against an absolutely-positioned `min-h-[150vh]` card layer, and
+ *     the two only agreed at one window height. Being absolute, the card layer
+ *     added nothing to the section's height, so the section was ~100vh while
+ *     the cards inside it were ~150vh — and `overflow-hidden` ate the
+ *     difference. The bottom row was clipped on any ordinary screen, the
+ *     grid's centring left a screenful of dead black above the heading, and
+ *     the band that followed started underneath the cards rather than after
+ *     them.
  *
- *     Those two numbers have to move as a pair. The card layer is absolutely
- *     positioned, so it contributes nothing to the section's height: shrink
- *     the section alone and the grid spills over the band below it; shrink the
- *     card layer alone and the empty top comes straight back. `svh`, not `vh`,
- *     for the same reason the hero uses it — `vh` measures the viewport with
- *     mobile browser chrome retracted.
+ *     Both layers now share one grid cell (`col-start-1 row-start-1`), which
+ *     is the same overlap without taking either out of flow: the section is as
+ *     tall as the taller of the two, so the cards cannot outgrow it, the copy
+ *     still sits behind them, and the next section is pushed clear. Height
+ *     comes from the cards themselves at every breakpoint, so there is no
+ *     viewport arithmetic left to disagree with.
+ *
+ *     `overflow-hidden` stays, and is now only doing the job it was for:
+ *     clipping the ±200px the cards travel sideways, so the page never gains a
+ *     horizontal scrollbar.
+ *
+ *   - the demo's overlap — copy behind the cards, revealed through the hole
+ *     they tear open — is kept from `xl` up and dropped below it.
+ *
+ *     It needs two things to work, and only a wide screen has both. The hole
+ *     has to be wider than the copy: the pairs travel ±100/150/260px by
+ *     breakpoint, opening 200px on a phone and 316px on a tablet against copy
+ *     blocks of 320px and 512px, so below `xl` the heading would lose its first
+ *     and last letters. And the cards have to have somewhere to go: at 1280 and
+ *     up they finish inside the viewport, which is what makes 260 affordable
+ *     there and not lower down.
+ *
+ *     Below `xl` the band is therefore an ordinary stack — grid first, then the
+ *     copy under it, which is also the order a phone should read in. The cards
+ *     still slide apart and rotate; they just no longer have anything to
+ *     uncover.
+ *
+ *     Below `xl` this also makes the reduced-motion path identical to the
+ *     normal one. Above it the copy is left visible rather than pinned behind
+ *     an unopened grid, because the scroll timeline that would part the cards
+ *     never runs.
  */
 
 export function DribbbleGrid({ content }: { content: GalleryContent }) {
@@ -88,7 +116,17 @@ export function DribbbleGrid({ content }: { content: GalleryContent }) {
         (context) => {
           const { isMobile, isTablet } = context.conditions ?? {};
 
-          const baseDistance = isMobile ? 100 : isTablet ? 150 : 200;
+          // 340 on desktop, not the demo's 200. The demo's centre block was the
+          // single word "Dribbble" over one short line; this one is "Our
+          // Speciality" over three, and its longest line measures 617px. At 200
+          // the pairs open a 424px hole, so the copy's ends stay behind the
+          // cards and the reveal the whole section exists for never lands.
+          //
+          // 340 opens 704px, and the 10deg rotation costs ~25px off each inner
+          // edge, leaving ~654px clear — enough for 617 with room to spare. The
+          // cards run off the sides by then, which is what `overflow-hidden` on
+          // the section is for; the demo did the same.
+          const baseDistance = isMobile ? 100 : isTablet ? 150 : 340;
           const baseRotation = isMobile ? 6 : isTablet ? 8 : 10;
           const scrub = isMobile ? 0.8 : isTablet ? 1.2 : 1.5;
 
@@ -157,7 +195,7 @@ export function DribbbleGrid({ content }: { content: GalleryContent }) {
               fastScrollEnd: true,
             },
           });
-        }
+        },
       );
     }, containerRef);
 
@@ -184,41 +222,45 @@ export function DribbbleGrid({ content }: { content: GalleryContent }) {
   return (
     <section
       ref={containerRef}
-      className="relative z-40 flex min-h-[55svh] items-center justify-center overflow-visible bg-[#0a0a0a] pt-10 pb-20 text-white sm:min-h-[70svh] sm:pt-16 sm:pb-32 md:min-h-screen md:pt-64 md:pb-96 lg:pt-80 lg:pb-[32rem] motion-reduce:min-h-0 motion-reduce:flex-col motion-reduce:gap-16 motion-reduce:py-24"
+      className="relative z-40 flex flex-col items-center gap-10 overflow-hidden bg-[#0a0a0a] py-16 text-white sm:gap-12 sm:py-20 md:gap-16 md:py-24 lg:py-28 xl:grid xl:place-items-center xl:gap-0 xl:py-32 xl:motion-reduce:flex xl:motion-reduce:flex-col xl:motion-reduce:gap-16"
     >
-      {/* The card layer is taken out of flow so the centre block can sit under
-          it; the section's own height is what the two together need. */}
-      <div className="absolute top-0 left-0 h-auto min-h-full w-full overflow-visible motion-reduce:relative motion-reduce:min-h-0">
-        <div className="relative mx-auto flex min-h-[55svh] w-full max-w-6xl items-center justify-center overflow-visible px-4 py-10 sm:min-h-[70svh] sm:px-6 sm:py-16 md:min-h-[150vh] md:px-10 md:py-32 lg:px-16 xl:px-20 motion-reduce:min-h-0 motion-reduce:py-0">
-          <div className="grid w-full max-w-xs grid-cols-2 gap-2 sm:max-w-md sm:gap-3 md:max-w-2xl md:gap-4 lg:max-w-4xl lg:gap-6">
-            {cards.map((card, index) => (
-              <div
-                key={card.id}
-                ref={(el) => {
-                  imageRefs.current[index] = el;
-                }}
-                className="relative z-20 aspect-[4/3] w-full overflow-hidden rounded-[6px] border border-white/10 bg-white/5 shadow-2xl will-change-transform sm:rounded-[8px] md:rounded-[10px] lg:rounded-[12px]"
-              >
-                {card.image ? (
-                  <Image
-                    src={card.image}
-                    alt={card.alt}
-                    fill
-                    sizes="(max-width: 640px) 45vw, (max-width: 1024px) 40vw, 500px"
-                    className="object-cover"
-                    draggable={false}
-                  />
-                ) : null}
-              </div>
-            ))}
-          </div>
+      {/* In flow, so the section is as tall as the copy and grid together and
+          the band below starts after them. The padding is what the cards need
+          once they have rotated ~10deg out of true. */}
+      <div className="w-full px-6 sm:px-8 md:px-10 lg:px-16 xl:col-start-1 xl:row-start-1 xl:px-20">
+        <div className="mx-auto grid w-full max-w-xs grid-cols-2 gap-3 sm:max-w-md sm:gap-4 md:max-w-2xl md:gap-4 lg:max-w-4xl lg:gap-6">
+          {cards.map((card, index) => (
+            <div
+              key={card.id}
+              ref={(el) => {
+                imageRefs.current[index] = el;
+              }}
+              className="relative z-20 aspect-[4/3] w-full overflow-hidden rounded-[6px] border border-white/10 bg-white/5 shadow-2xl will-change-transform sm:rounded-[8px] md:rounded-[10px] lg:rounded-[12px]"
+            >
+              {card.image ? (
+                <Image
+                  src={card.image}
+                  alt={card.alt}
+                  fill
+                  sizes="(max-width: 640px) 45vw, (max-width: 1024px) 40vw, 500px"
+                  className="object-cover"
+                  draggable={false}
+                />
+              ) : null}
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Behind the cards until the pairs pull apart. */}
+      {/* Below xl: plain source order, so the photographs come first and the
+          heading reads as a caption under them.
+
+          From xl: the same grid cell as the cards, at a lower z, so it sits
+          behind them and the parting pairs uncover it. Staying after the grid
+          in source is also what keeps the GSAP refs above in index order. */}
       <div
         ref={contentRef}
-        className="relative z-0 mx-auto max-w-xs px-4 text-center sm:max-w-md sm:px-6 md:max-w-lg md:px-8 lg:max-w-2xl lg:px-12 motion-reduce:order-first motion-reduce:z-30"
+        className="mx-auto max-w-xs px-4 text-center sm:max-w-md sm:px-6 md:max-w-lg md:px-8 lg:max-w-2xl lg:px-12 xl:z-0 xl:col-start-1 xl:row-start-1 xl:motion-reduce:z-30"
       >
         <h2 className="mb-4 font-display text-[clamp(32px,8vw,80px)] leading-[0.9] font-normal sm:mb-6 md:mb-8 lg:mb-10">
           <span

@@ -10,7 +10,7 @@ export default function ContactLoading() {
   return (
     <main className="flex-1 bg-[#0a0a0a]">
       <LoadingLabel what="contact details" />
-      <div className="mx-auto w-full max-w-[1440px] px-5 pt-28 pb-16 sm:px-10 sm:pt-32 md:pt-40 md:pb-20 xl:px-16">
+      <div className="mx-auto w-full max-w-[1440px] px-5 below-header pb-16 sm:px-10 md:pb-20 xl:px-16">
         <PageHeaderSkeleton />
         {/* The map band, then the two columns under it. */}
         <Skeleton aria-hidden className="mt-10 aspect-[16/9] w-full md:aspect-[21/9]" />

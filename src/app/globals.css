@@ -144,6 +144,22 @@ body {
   letter-spacing: 5.04px; /* the wordmark's Figma tracking (97:988) */
 }
 
+/* The logo, when Site settings holds one, stands in for .logo-text above.
+   Its box — height, and the most it may spread sideways — is set in the admin
+   and arrives as an inline style, because the admin accepts any image and a
+   wordmark, a monogram and a square photo all want different room. What stays
+   here is the part that is not editable: width follows the file's own
+   proportions, and `contain` means the box only ever limits the image, never
+   stretches or crops it. The bar grows with a taller logo, which is why the
+   admin previews the whole header rather than the file. */
+.logo-image {
+  display: block;
+  height: var(--nav-logo-current);
+  width: auto;
+  max-width: var(--nav-logo-max-width);
+  object-fit: contain;
+}
+
 /* Desktop horizontal navigation */
 .desktop-nav {
   align-items: center;
@@ -452,6 +468,19 @@ body {
   transition: color 0.3s ease;
 }
 
+/* Same substitution inside the mobile menu, and the same box from the admin —
+   one setting rather than two, so what the preview shows is what both places
+   draw. It sits inside .sidebar-logo-content, whose border is what the hover
+   state colours, so there is no hover rule here to match
+   .sidebar-logo-link:hover .sidebar-logo-text. */
+.sidebar-logo-image {
+  display: block;
+  height: var(--nav-logo-current);
+  width: auto;
+  max-width: var(--nav-logo-max-width);
+  object-fit: contain;
+}
+
 .sidebar-logo-link:hover .sidebar-logo-text {
   color: var(--color-accent);
 }
@@ -710,6 +739,72 @@ body {
   --border: rgba(255, 255, 255, 0.16);
   --input: rgba(255, 255, 255, 0.22);
   --ring: #c7ff3d;
+
+  /*
+   * Header geometry.
+   *
+   * The logo is drawn at a fixed height: 96px on a computer, 64px on a phone,
+   * and never more than 360px wide. Those are sizes, not preferences — the bar
+   * is what the rest of the page is laid out against, so they are not editable
+   * in the admin. Uploading a mark that reads at 96px is the job; scaling it is
+   * not.
+   *
+   * This is double the usual header logo, which is a deliberate choice rather
+   * than a default: at 48/32 the mark sat inside the bar's designed height and
+   * changed nothing, and these do not. The bar's own padding is 2 x 1.5rem, so
+   * 96 + 48 = 144 against the 105px the desktop header was designed at, and
+   * 64 + 48 = 112 against the phone's 74px. `--header-height` below is what
+   * absorbs both — the bar grows and every page reserves the larger number, so
+   * a logo this size lands on nothing.
+   *
+   * `--header-height` exists because the bar is `position: absolute` and paints
+   * over the page rather than pushing it down, so every page has to reserve its
+   * height by hand — and used to do it with a literal 74/105 that no longer
+   * matches. `max()` keeps the design's original bar height as the floor.
+   *
+   * `next/image` needs the same two numbers for its srcset hint; they are
+   * mirrored in `kinetic-nav.tsx` and in `core.admin` for the admin's preview.
+   */
+  --nav-logo-height: 96px;
+  --nav-logo-height-mobile: 64px;
+  --nav-logo-max-width: 360px;
+
+  --header-padding: 1.5rem;
+  --header-floor: 74px;
+  --nav-logo-current: var(--nav-logo-height-mobile);
+  --header-height: max(
+    var(--header-floor),
+    calc(var(--nav-logo-current) + 2 * var(--header-padding))
+  );
+}
+
+/* xl — where the horizontal links appear and the bar is measured at 105. */
+@media (min-width: 1280px) {
+  :root {
+    --header-floor: 105px;
+    --nav-logo-current: var(--nav-logo-height);
+  }
+}
+
+/*
+ * Pages that begin underneath the overlaying header. Their own top padding is
+ * the floor — it is the design's spacing, not just clearance — and the header
+ * only takes over when a tall logo makes the bar deeper than that.
+ */
+.below-header {
+  padding-top: max(7rem, var(--header-height));
+}
+
+@media (min-width: 640px) {
+  .below-header {
+    padding-top: max(8rem, var(--header-height));
+  }
+}
+
+@media (min-width: 768px) {
+  .below-header {
+    padding-top: max(10rem, var(--header-height));
+  }
 }
 
 /* -----------------------------------------------------------------

@@ -54,7 +54,7 @@ export default async function ServicesPage() {
   return (
     <>
       <main className="flex-1 bg-[#0a0a0a]">
-        <div className="mx-auto w-full max-w-[1000px] px-5 pt-28 pb-20 sm:px-8 sm:pt-32 md:pt-40 md:pb-28">
+        <div className="mx-auto w-full max-w-[1000px] px-5 below-header pb-20 sm:px-8 md:pb-28">
           {/* Fixed-position, so it floats over the page rather than taking a
               slot in this column — nothing below shifts to make room. */}
           <BackButton />

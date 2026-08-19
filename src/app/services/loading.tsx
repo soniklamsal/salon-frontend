@@ -6,7 +6,7 @@ export default function ServicesLoading() {
   return (
     <main className="flex-1 bg-[#0a0a0a]">
       <LoadingLabel what="the booking form" />
-      <div className="mx-auto w-full max-w-[1000px] px-5 pt-28 pb-20 sm:px-8 sm:pt-32 md:pt-40 md:pb-28">
+      <div className="mx-auto w-full max-w-[1000px] px-5 below-header pb-20 sm:px-8 md:pb-28">
         <PageHeaderSkeleton />
         <div
           aria-hidden

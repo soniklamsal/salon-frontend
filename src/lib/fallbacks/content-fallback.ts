@@ -20,6 +20,7 @@ const CLOUDINARY = "https://res.cloudinary.com/ufiebboc/image/upload/";
 
 export const FALLBACK_CONTENT: SiteContent = {
   site: {
+    logo: "",
     brandName: "SALON",
     badgeCaption: "We Don't Keep Our Beauty Secrets",
     metaTitle: "Salon — Always Make Room for a Little Beauty in Your Life",
@@ -138,34 +139,6 @@ export const FALLBACK_CONTENT: SiteContent = {
     heading: "Follow Us",
     body: "Don’t miss promotions, follow us for the latest news",
   },
-
-  contactColumns: [
-    {
-      id: 1,
-      heading: "Contact",
-      icon: "phone",
-      lines: ["T: 070 9485 7568", "info@beautysalon.com"],
-      order: 0,
-    },
-    {
-      id: 2,
-      heading: "Hours",
-      icon: "clock",
-      lines: [
-        "Mon to Fri: 7:30 am — 1:00 am",
-        "Sat: 9:00 am — 1:00 am",
-        "Sun: 9:00 am — 11:30 pm",
-      ],
-      order: 1,
-    },
-    {
-      id: 3,
-      heading: "Location",
-      icon: "pin",
-      lines: ["Thamel,", "Kathmandu", "Nepal"],
-      order: 2,
-    },
-  ],
 
   footer: {
     headingLine1: "TIME",

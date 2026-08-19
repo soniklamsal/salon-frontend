@@ -54,7 +54,6 @@ function withFallbacks(payload: Partial<SiteContent>): SiteContent {
     ourStory: { ...f.ourStory, ...payload.ourStory },
     asSeenOn: { ...f.asSeenOn, ...payload.asSeenOn },
     followUs: { ...f.followUs, ...payload.followUs },
-    contactColumns: pick(payload.contactColumns, f.contactColumns),
     footer: { ...f.footer, ...payload.footer },
   };
 }

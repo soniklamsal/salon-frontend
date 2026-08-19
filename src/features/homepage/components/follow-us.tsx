@@ -90,7 +90,11 @@ export function FollowUs({
 
         <div className="flex flex-col items-center gap-14 xl:block xl:gap-0">
           <div className="xl:absolute xl:left-[187px] xl:top-[305px]">
-            <SalonBadge brandName={site.brandName} caption={site.badgeCaption} />
+            <SalonBadge
+              logo={site.logo}
+              brandName={site.brandName}
+              caption={site.badgeCaption}
+            />
           </div>
 
           {/* 97:1152 — Frame 17, auto-layout VERTICAL gap 69 */}

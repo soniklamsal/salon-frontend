@@ -32,8 +32,11 @@ export function AuthPanel({
   heading: string;
   sub: string;
 }) {
+  // `below-header` rather than a matching `pt-*`: the panel is centred, so its
+  // top padding is really a minimum gutter under the overlaying header — and
+  // that header's height follows the logo size set in the admin.
   return (
-    <main className="flex flex-1 items-center justify-center bg-[#0a0a0a] px-5 py-28 sm:py-32">
+    <main className="below-header flex flex-1 items-center justify-center bg-[#0a0a0a] px-5 pb-28 sm:pb-32">
       <div className="w-full max-w-[460px]">
         <h1 className="text-center text-[clamp(28px,6vw,44px)] leading-tight font-bold text-white">
           {heading}
