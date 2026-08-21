@@ -109,14 +109,14 @@ export const FALLBACK_CONTENT: SiteContent = {
     marqueePhrase:
       "FRESH CUTS • SHARP FADES • CLEAN LINES • EVERY CHAIR • EVERY DAY • REAL MOMENTS",
     cards: [
-      { id: 1, slug: "fresh-cut", name: "Fresh\nCut", href: "/services", image: `${CLOUDINARY}v1786269602/devis-gym/people/DSC07734.JPG.webp`, order: 0 },
-      { id: 2, slug: "sharp-fade", name: "Sharp\nFade", href: "/services", image: `${CLOUDINARY}v1786269452/devis-gym/people/DSC07615-4.JPG.webp`, order: 1 },
-      { id: 3, slug: "beard-work", name: "Beard\nWork", href: "/services", image: `${CLOUDINARY}v1786269591/devis-gym/people/DSC07629-3.JPG.webp`, order: 2 },
-      { id: 4, slug: "wash-style", name: "Wash &\nStyle", href: "/services", image: `${CLOUDINARY}v1786269637/devis-gym/people/DSC07636-3.JPG.webp`, order: 3 },
-      { id: 5, slug: "colour-day", name: "Colour\nDay", href: "/services", image: `${CLOUDINARY}v1786268875/devis-gym/people/DSC07385.JPG.webp`, order: 4 },
-      { id: 6, slug: "clean-lines", name: "Clean\nLines", href: "/services", image: `${CLOUDINARY}v1786269241/devis-gym/people/DSC07541.JPG.webp`, order: 5 },
-      { id: 7, slug: "finishing-touch", name: "Finishing\nTouch", href: "/services", image: `${CLOUDINARY}v1786268706/devis-gym/classes/OutdoorActivities.webp`, order: 6 },
-      { id: 8, slug: "book-your-seat", name: "Book\nYour Seat", href: "/services", image: `${CLOUDINARY}v1786269681/devis-gym/people/DSC07643-3.JPG.webp`, order: 7 },
+      { id: 1, slug: "fresh-cut", name: "Fresh\nCut", href: "/services", image: `${CLOUDINARY}v1786269602/devis-gym/people/DSC07734.JPG.webp`, video: {}, order: 0 },
+      { id: 2, slug: "sharp-fade", name: "Sharp\nFade", href: "/services", image: `${CLOUDINARY}v1786269452/devis-gym/people/DSC07615-4.JPG.webp`, video: {}, order: 1 },
+      { id: 3, slug: "beard-work", name: "Beard\nWork", href: "/services", image: `${CLOUDINARY}v1786269591/devis-gym/people/DSC07629-3.JPG.webp`, video: {}, order: 2 },
+      { id: 4, slug: "wash-style", name: "Wash &\nStyle", href: "/services", image: `${CLOUDINARY}v1786269637/devis-gym/people/DSC07636-3.JPG.webp`, video: {}, order: 3 },
+      { id: 5, slug: "colour-day", name: "Colour\nDay", href: "/services", image: `${CLOUDINARY}v1786268875/devis-gym/people/DSC07385.JPG.webp`, video: {}, order: 4 },
+      { id: 6, slug: "clean-lines", name: "Clean\nLines", href: "/services", image: `${CLOUDINARY}v1786269241/devis-gym/people/DSC07541.JPG.webp`, video: {}, order: 5 },
+      { id: 7, slug: "finishing-touch", name: "Finishing\nTouch", href: "/services", image: `${CLOUDINARY}v1786268706/devis-gym/classes/OutdoorActivities.webp`, video: {}, order: 6 },
+      { id: 8, slug: "book-your-seat", name: "Book\nYour Seat", href: "/services", image: `${CLOUDINARY}v1786269681/devis-gym/people/DSC07643-3.JPG.webp`, video: {}, order: 7 },
     ],
   },
 

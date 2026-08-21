@@ -222,7 +222,7 @@ export function DribbbleGrid({ content }: { content: GalleryContent }) {
   return (
     <section
       ref={containerRef}
-      className="relative z-40 flex flex-col items-center gap-10 overflow-hidden bg-[#0a0a0a] py-16 text-white sm:gap-12 sm:py-20 md:gap-16 md:py-24 lg:py-28 xl:grid xl:place-items-center xl:gap-0 xl:py-32 xl:motion-reduce:flex xl:motion-reduce:flex-col xl:motion-reduce:gap-16"
+      className="relative z-40 flex flex-col items-center gap-10 overflow-x-hidden overflow-y-visible bg-[#0a0a0a] py-16 text-white sm:gap-12 sm:py-20 md:gap-16 md:py-24 lg:py-28 xl:grid xl:place-items-center xl:gap-0 xl:py-32 xl:motion-reduce:flex xl:motion-reduce:flex-col xl:motion-reduce:gap-16"
     >
       {/* In flow, so the section is as tall as the copy and grid together and
           the band below starts after them. The padding is what the cards need

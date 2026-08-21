@@ -6,6 +6,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
 import Image from "next/image";
 
+import { CardVideo } from "./card-video";
+
 import { Reveal } from "@/components/shared/reveal";
 import { cldOptimize } from "@/lib/cloudinary";
 import type { ClassesContent } from "@/lib/types/content-types";
@@ -136,8 +138,8 @@ export function ClassesDesigned({ content }: { content: ClassesContent }) {
   }, []);
 
   return (
-    <section ref={sectionRef} className="overflow-hidden bg-[#0a0a0a]">
-      <div className="mx-auto w-full max-w-[1440px] px-5 pt-8 pb-16 md:px-10 md:pt-12 md:pb-20 xl:px-16">
+    <section ref={sectionRef} className="overflow-x-hidden overflow-y-visible bg-[#0a0a0a]">
+      <div className="mx-auto w-full max-w-[1440px] px-5 pt-8 pb-20 md:px-10 md:pt-12 md:pb-28 xl:px-16 xl:pb-32">
         <div className="mb-14 text-center">
           <h2 className="text-white uppercase">
             <span
@@ -157,14 +159,14 @@ export function ClassesDesigned({ content }: { content: ClassesContent }) {
 
         {/* Scroll-driven marquee. The phrase is repeated so the strip is always
             wider than the viewport; wrapping happens on half its own width. */}
-        <div className="relative mb-16 w-full overflow-hidden">
+        <div className="relative mb-12 w-full overflow-hidden md:mb-16">
           <div
             ref={scrollTextRef}
             className="flex whitespace-nowrap text-white"
             style={{
               fontWeight: 800,
-              fontSize: "clamp(60px, 8vw, 95px)",
-              lineHeight: "95px",
+              fontSize: "clamp(40px, 6vw, 95px)",
+              lineHeight: "clamp(48px, 7vw, 110px)",
               transform: "translate3d(0, 0, 0)",
               willChange: "transform",
             }}
@@ -177,16 +179,30 @@ export function ClassesDesigned({ content }: { content: ClassesContent }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-6 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {content.cards.map((item, i) => (
             <Reveal key={item.id} delay={i * 0.1}>
               <Link href={item.href} className="block">
                 <div className="group cursor-pointer">
-                  <div className="relative h-[300px] overflow-hidden rounded-lg shadow-xl md:h-[450px]">
-                    {/* `cldOptimize` is a no-op on anything that is not a
-                        Cloudinary URL, so an image uploaded in the admin passes
-                        straight through. */}
-                    {item.image ? (
+                  <div className="relative h-[350px] overflow-hidden rounded-lg shadow-xl sm:h-[300px] md:h-[450px]">
+                    {/*
+                      A clip wins over a photo while its URL is filled in, and
+                      the photo comes straight back when it is emptied. A
+                      precedence rule rather than a validation error, because
+                      every seeded card ships with an `image_url` — refusing to
+                      save a card carrying both made the video field unusable
+                      on all of them.
+
+                      `cldOptimize` is a no-op on anything that is not a
+                      Cloudinary URL, so an image uploaded in the admin passes
+                      straight through.
+                    */}
+                    {item.video?.src ? (
+                      <CardVideo
+                        video={item.video}
+                        label={item.name.replace("\n", " ")}
+                      />
+                    ) : item.image ? (
                       <Image
                         src={cldOptimize(item.image, 700)}
                         alt={item.name.replace("\n", " ")}

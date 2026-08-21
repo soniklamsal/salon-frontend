@@ -137,6 +137,27 @@ export type GalleryContent = {
   isPublished: boolean;
 };
 
+/**
+ * A clip on a Class card, or `{}` when the card has none.
+ *
+ * One shape, because there is one way a clip gets onto a card: somebody pastes
+ * its address in the admin. This project stores no video itself.
+ *
+ * `src` may be an `.m3u8` manifest as easily as an `.mp4` — the player checks
+ * the extension rather than being told which it is, so an adaptive stream from
+ * any host still works.
+ */
+export type ClassCardVideo = {
+  /** The clip's address. `.mp4` or `.m3u8`; both play. */
+  src?: string;
+  /**
+   * A still to show while the clip buffers. Derived from the source where the
+   * host can render one — Cloudinary will, an arbitrary server will not — so
+   * this is often absent and the tile is simply black for a moment.
+   */
+  thumbnail?: string;
+};
+
 export type ClassCard = {
   id: number;
   slug: string;
@@ -144,6 +165,8 @@ export type ClassCard = {
   name: string;
   href: string;
   image: string;
+  /** `{}` when the card is a still only. */
+  video: ClassCardVideo;
   order: number;
 };
 

@@ -840,3 +840,15 @@ body {
   width: 0;
   height: 0;
 }
+
+/* Used by the video modal's backdrop. Behind `motion-safe:` at the call site,
+   so somebody who has asked for reduced motion gets the overlay immediately
+   rather than a fade. */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
