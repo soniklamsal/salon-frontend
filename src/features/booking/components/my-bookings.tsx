@@ -159,151 +159,290 @@ function BookingDialog({
               */
               className="salon-scroll grid min-h-0 flex-1 gap-4 overflow-y-auto p-6"
             >
-            <DialogHeader>
-              <DialogTitle className="flex flex-wrap items-center gap-3 text-left">
-                {booking.service || "Booking"}
-                <span
+              <DialogHeader>
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <DialogTitle className="flex flex-wrap items-center gap-3 text-left">
+                      {booking.service || "Booking"}
+                      <span
+                        className={cn(
+                          "rounded-full border px-3 py-1 text-xs font-semibold",
+                          STATUS_STYLES[booking.status]
+                        )}
+                      >
+                        {booking.statusLabel}
+                      </span>
+                    </DialogTitle>
+                    <DialogDescription className="text-left">
+                      {booking.barber ? `With ${booking.barber}. ` : ""}
+                      Requested {exactly(booking.createdAt)}.
+                    </DialogDescription>
+                  </div>
+
+                  {/* Download booking slip button */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // Trigger download
+                      const printWindow = window.open("", "_blank");
+                      if (!printWindow) return;
+
+                      printWindow.document.write(`
+                      <!DOCTYPE html>
+                      <html>
+                      <head>
+                        <title>Booking Slip - ${booking.reference}</title>
+                        <style>
+                          * { margin: 0; padding: 0; box-sizing: border-box; }
+                          body { font-family: -apple-system, system-ui, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; }
+                          .header { text-align: center; border-bottom: 3px solid #c7ff3d; padding-bottom: 20px; margin-bottom: 30px; }
+                          .header h1 { font-size: 28px; color: #0a0a0a; margin-bottom: 5px; }
+                          .header p { color: #666; font-size: 14px; }
+                          .status-badge { display: inline-block; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; margin: 20px 0; ${booking.status === 'pending' ? 'background: #fef3c7; color: #92400e; border: 1px solid #fde68a;' :
+                          booking.status === 'approved' ? 'background: #d4ff00; color: #0a0a0a; border: 1px solid #c7ff3d;' :
+                            booking.status === 'completed' ? 'background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd;' :
+                              'background: #fee2e2; color: #991b1b; border: 1px solid #fecaca;'
+                        } }
+                          .code-box { background: #f9fafb; border: 2px dashed #d1d5db; border-radius: 8px; padding: 20px; text-align: center; margin: 20px 0; }
+                          .code-box label { display: block; font-size: 11px; text-transform: uppercase; color: #6b7280; letter-spacing: 1px; margin-bottom: 8px; }
+                          .code-box .code { font-family: 'Courier New', monospace; font-size: 24px; font-weight: 700; color: ${booking.orderId ? '#c7ff3d' : '#0a0a0a'}; letter-spacing: 2px; }
+                          .schedule-box { background: #d4ff00; border-radius: 8px; padding: 15px; text-align: center; margin: 20px 0; }
+                          .schedule-box label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: block; }
+                          .schedule-box .time { font-size: 20px; font-weight: 700; color: #0a0a0a; }
+                          .details { margin: 30px 0; }
+                          .detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e5e7eb; }
+                          .detail-row:last-child { border-bottom: none; }
+                          .detail-row .label { color: #6b7280; font-size: 14px; }
+                          .detail-row .value { font-weight: 600; color: #0a0a0a; text-align: right; }
+                          .footer { margin-top: 40px; padding-top: 20px; border-top: 2px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 12px; }
+                          @media print {
+                            body { padding: 20px; }
+                            button { display: none; }
+                          }
+                          .print-btn { background: #c7ff3d; color: #0a0a0a; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; margin: 20px auto; display: block; }
+                          .print-btn:hover { opacity: 0.9; }
+                        </style>
+                      </head>
+                      <body>
+                        <div class="header">
+                          <h1>SALON BOOKING SLIP</h1>
+                          <p>Your appointment confirmation</p>
+                        </div>
+                        
+                        <div style="text-align: center;">
+                          <span class="status-badge">${booking.statusLabel}</span>
+                        </div>
+                        
+                        <div class="code-box">
+                          <label>${booking.orderId ? 'Order ID — Show this at the salon' : 'Reference Number'}</label>
+                          <div class="code">${booking.orderId ?? booking.reference}</div>
+                          ${!booking.orderId ? '<p style="color: #6b7280; font-size: 12px; margin-top: 10px;">An order ID will be assigned once payment is verified</p>' : ''}
+                        </div>
+                        
+                        ${booking.scheduledDate || booking.scheduledTime ? `
+                          <div class="schedule-box">
+                            <label>Your Appointment Time</label>
+                            <div class="time">${slot(booking.scheduledDate, booking.scheduledTime) || 'To be confirmed'}</div>
+                          </div>
+                        ` : ''}
+                        
+                        <div class="details">
+                          <div class="detail-row">
+                            <span class="label">Service</span>
+                            <span class="value">${booking.service || '—'}</span>
+                          </div>
+                          <div class="detail-row">
+                            <span class="label">Barber</span>
+                            <span class="value">${booking.barber || '—'}</span>
+                          </div>
+                          <div class="detail-row">
+                            <span class="label">Customer Name</span>
+                            <span class="value">${booking.name || '—'}</span>
+                          </div>
+                          <div class="detail-row">
+                            <span class="label">Address</span>
+                            <span class="value">${booking.address || '—'}</span>
+                          </div>
+                          ${booking.notes ? `
+                            <div class="detail-row">
+                              <span class="label">Notes</span>
+                              <span class="value">${booking.notes}</span>
+                            </div>
+                          ` : ''}
+                          <div class="detail-row">
+                            <span class="label">Booking Date</span>
+                            <span class="value">${exactly(booking.createdAt) ?? '—'}</span>
+                          </div>
+                          ${booking.approvedAt ? `
+                            <div class="detail-row">
+                              <span class="label">Approved On</span>
+                              <span class="value">${exactly(booking.approvedAt) ?? '—'}</span>
+                            </div>
+                          ` : ''}
+                        </div>
+                        
+                        <button class="print-btn" onclick="window.print()">Print This Slip</button>
+                        
+                        <div class="footer">
+                          <p>Thank you for choosing our salon!</p>
+                          <p style="margin-top: 5px;">Please bring this slip or your ${booking.orderId ? 'Order ID' : 'reference number'} when you visit.</p>
+                        </div>
+                      </body>
+                      </html>
+                    `);
+                      printWindow.document.close();
+                      printWindow.focus();
+                    }}
+                    title="Download booking slip"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-5 w-5"
+                      aria-hidden="true"
+                    >
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" x2="12" y1="15" y2="3" />
+                    </svg>
+                    <span className="sr-only">Download booking slip</span>
+                  </button>
+                </div>
+              </DialogHeader>
+
+              {/* The code to quote — whichever one exists yet. */}
+              <div className="border-border rounded-lg border border-dashed p-4 text-center">
+                <p className="text-muted-foreground text-xs tracking-wider uppercase">
+                  {booking.orderId
+                    ? "Order ID — show this at the salon"
+                    : "Reference"}
+                </p>
+                <p
                   className={cn(
-                    "rounded-full border px-3 py-1 text-xs font-semibold",
-                    STATUS_STYLES[booking.status]
+                    "mt-1 font-mono text-xl font-bold tracking-wider",
+                    booking.orderId && "text-primary"
                   )}
                 >
-                  {booking.statusLabel}
-                </span>
-              </DialogTitle>
-              <DialogDescription className="text-left">
-                {booking.barber ? `With ${booking.barber}. ` : ""}
-                Requested {exactly(booking.createdAt)}.
-              </DialogDescription>
-            </DialogHeader>
-
-            {/* The code to quote — whichever one exists yet. */}
-            <div className="border-border rounded-lg border border-dashed p-4 text-center">
-              <p className="text-muted-foreground text-xs tracking-wider uppercase">
-                {booking.orderId
-                  ? "Order ID — show this at the salon"
-                  : "Reference"}
-              </p>
-              <p
-                className={cn(
-                  "mt-1 font-mono text-xl font-bold tracking-wider",
-                  booking.orderId && "text-primary"
-                )}
-              >
-                {booking.orderId ?? booking.reference}
-              </p>
-              {!booking.orderId ? (
-                <p className="text-muted-foreground mt-2 text-xs">
-                  An order ID appears here once we have checked your payment.
+                  {booking.orderId ?? booking.reference}
                 </p>
-              ) : null}
-            </div>
+                {!booking.orderId ? (
+                  <p className="text-muted-foreground mt-2 text-xs">
+                    An order ID appears here once we have checked your payment.
+                  </p>
+                ) : null}
+              </div>
 
-            {/*
+              {/*
               The other half of what an approved customer needs: the code to
               quote and the time to be there. Sits next to the order ID rather
               than down in the details list, because "when do I come" is the
               question this page exists to answer — and the customer has no
               other source for it, since they never picked one.
             */}
-            {booking.orderId ? (
-              <div className="border-primary/40 bg-primary/5 rounded-lg border px-4 py-3 text-center">
-                <p className="text-muted-foreground text-xs tracking-wider uppercase">
-                  Come in at
-                </p>
-                <p className="text-primary mt-1 text-lg font-bold">
-                  {slot(booking.scheduledDate, booking.scheduledTime) ||
-                    "A time we will agree with you"}
-                </p>
-                {!booking.scheduledDate && !booking.scheduledTime ? (
-                  <p className="text-muted-foreground mt-1 text-xs">
-                    We will call you to arrange it.
-                  </p>
-                ) : null}
-              </div>
-            ) : null}
-
-            {/* Where the request has got to. Stages reached are filled in. */}
-            <ol className="grid grid-cols-3 gap-2 text-center text-[11px]">
-              {(
-                [
-                  ["Pending", true],
-                  ["Approved", Boolean(booking.approvedAt)],
-                  ["Completed", Boolean(booking.completedAt)],
-                ] as [string, boolean][]
-              ).map(([label, reached]) => (
-                <li
-                  key={label}
-                  className={cn(
-                    "rounded-md border px-2 py-2 font-semibold",
-                    reached
-                      ? "border-primary/50 bg-primary/10 text-primary"
-                      : "border-border text-muted-foreground"
-                  )}
-                >
-                  {label}
-                </li>
-              ))}
-            </ol>
-
-            <dl className="divide-border divide-y">
-              <Row label="Reference" value={booking.reference} />
               {booking.orderId ? (
-                <Row label="Order ID" value={booking.orderId} />
+                <div className="border-primary/40 bg-primary/5 rounded-lg border px-4 py-3 text-center">
+                  <p className="text-muted-foreground text-xs tracking-wider uppercase">
+                    Come in at
+                  </p>
+                  <p className="text-primary mt-1 text-lg font-bold">
+                    {slot(booking.scheduledDate, booking.scheduledTime) ||
+                      "A time we will agree with you"}
+                  </p>
+                  {!booking.scheduledDate && !booking.scheduledTime ? (
+                    <p className="text-muted-foreground mt-1 text-xs">
+                      We will call you to arrange it.
+                    </p>
+                  ) : null}
+                </div>
               ) : null}
-              <Row label="Service" value={booking.service || "—"} />
-              <Row label="Barber" value={booking.barber || "—"} />
-              <Row label="Name" value={booking.name || "—"} />
-              <Row label="Address" value={booking.address || "—"} />
-              <Row label="Notes" value={booking.notes || "—"} />
-              <Row
-                label="Time to come"
-                value={
-                  slot(booking.scheduledDate, booking.scheduledTime) ||
-                  "Not set yet"
-                }
-              />
-              <Row label="Requested" value={exactly(booking.createdAt) ?? "—"} />
-              {booking.approvedAt ? (
-                <Row
-                  label="Approved"
-                  value={exactly(booking.approvedAt) ?? "—"}
-                />
-              ) : null}
-              {booking.completedAt ? (
-                <Row
-                  label="Completed"
-                  value={exactly(booking.completedAt) ?? "—"}
-                />
-              ) : null}
-            </dl>
 
-            {/* Their own upload, shown back so they can see what we received. */}
-            <div>
-              <p className="text-muted-foreground mb-2 text-xs tracking-wider uppercase">
-                Payment proof you sent
-              </p>
-              {booking.paymentScreenshot ? (
-                <a
-                  href={booking.paymentScreenshot}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="border-border block overflow-hidden rounded-lg border"
-                >
-                  <Image
-                    src={booking.paymentScreenshot}
-                    alt="The payment screenshot you uploaded"
-                    width={480}
-                    height={320}
-                    className="h-auto w-full object-contain"
+              {/* Where the request has got to. Stages reached are filled in. */}
+              <ol className="grid grid-cols-3 gap-2 text-center text-[11px]">
+                {(
+                  [
+                    ["Pending", true],
+                    ["Approved", Boolean(booking.approvedAt)],
+                    ["Completed", Boolean(booking.completedAt)],
+                  ] as [string, boolean][]
+                ).map(([label, reached]) => (
+                  <li
+                    key={label}
+                    className={cn(
+                      "rounded-md border px-2 py-2 font-semibold",
+                      reached
+                        ? "border-primary/50 bg-primary/10 text-primary"
+                        : "border-border text-muted-foreground"
+                    )}
+                  >
+                    {label}
+                  </li>
+                ))}
+              </ol>
+
+              <dl className="divide-border divide-y">
+                <Row label="Reference" value={booking.reference} />
+                {booking.orderId ? (
+                  <Row label="Order ID" value={booking.orderId} />
+                ) : null}
+                <Row label="Service" value={booking.service || "—"} />
+                <Row label="Barber" value={booking.barber || "—"} />
+                <Row label="Name" value={booking.name || "—"} />
+                <Row label="Address" value={booking.address || "—"} />
+                <Row label="Notes" value={booking.notes || "—"} />
+                <Row
+                  label="Time to come"
+                  value={
+                    slot(booking.scheduledDate, booking.scheduledTime) ||
+                    "Not set yet"
+                  }
+                />
+                <Row label="Requested" value={exactly(booking.createdAt) ?? "—"} />
+                {booking.approvedAt ? (
+                  <Row
+                    label="Approved"
+                    value={exactly(booking.approvedAt) ?? "—"}
                   />
-                </a>
-              ) : (
-                <p className="text-muted-foreground text-sm">
-                  Nothing was uploaded with this booking.
+                ) : null}
+                {booking.completedAt ? (
+                  <Row
+                    label="Completed"
+                    value={exactly(booking.completedAt) ?? "—"}
+                  />
+                ) : null}
+              </dl>
+
+              {/* Their own upload, shown back so they can see what we received. */}
+              <div>
+                <p className="text-muted-foreground mb-2 text-xs tracking-wider uppercase">
+                  Payment proof you sent
                 </p>
-              )}
-            </div>
+                {booking.paymentScreenshot ? (
+                  <a
+                    href={booking.paymentScreenshot}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="border-border block overflow-hidden rounded-lg border"
+                  >
+                    <Image
+                      src={booking.paymentScreenshot}
+                      alt="The payment screenshot you uploaded"
+                      width={480}
+                      height={320}
+                      className="h-auto w-full object-contain"
+                    />
+                  </a>
+                ) : (
+                  <p className="text-muted-foreground text-sm">
+                    Nothing was uploaded with this booking.
+                  </p>
+                )}
+              </div>
             </div>
 
             {/* Nudges only while there is more below; GSAP-animated. */}
