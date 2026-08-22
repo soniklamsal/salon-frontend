@@ -363,41 +363,32 @@ const ScrollExpansionHero = ({
     >
       <section className="relative flex flex-col items-center justify-start min-h-[100dvh]">
         <div className="relative w-full flex flex-col items-center min-h-[100dvh]">
-          {/* No `mounted` gate here, unlike the overlays below. This is the
-              backdrop the page opens on, and starting it at 0 meant the server
-              -rendered paint was a black screen that only filled in once React
-              had hydrated. `1 - scrollProgress` is already 1 at rest, so the
-              scroll fade is unchanged -- only the blank first frame is gone. */}
           {/* Hide background image on mobile - only show video */}
-          {!isMobileState && (
-            <div
-              className="absolute inset-0 z-0 h-full"
+          {/* Added hidden md:block to prevent rendering on mobile entirely */}
+          <div
+            className="absolute inset-0 z-0 h-full hidden md:block"
+            style={{
+              opacity: mounted && !isMobileState ? 1 - scrollProgress : 0,
+              transition: "opacity 0.1s ease-out",
+            }}
+          >
+            <Image
+              src={bgImageSrc}
+              alt="Background"
+              width={1920}
+              height={1080}
+              className="w-screen h-screen"
               style={{
-                opacity: 1 - scrollProgress,
-                transition: "opacity 0.1s ease-out",
+                objectFit: "cover",
+                objectPosition: "center",
               }}
-            >
-              <Image
-                src={bgImageSrc}
-                alt="Background"
-                width={1920}
-                height={1080}
-                className="w-screen h-screen"
-                style={{
-                  objectFit: "cover",
-                  objectPosition: "center",
-                }}
-                // The LCP element of this page: full-viewport and above the fold.
-                // It was `loading="lazy"`, which cannot fire until hydration has
-                // run the intersection observer, so the fetch queued behind the
-                // JS bundle. `priority` preloads it from the document head at
-                // high fetch priority instead.
-                priority
-                sizes="100vw"
-              />
-              <div className="absolute inset-0 bg-black/10" />
-            </div>
-          )}
+              // Don't preload on mobile - only load on desktop
+              priority={false}
+              loading="lazy"
+              sizes="(max-width: 768px) 0vw, 100vw"
+            />
+            <div className="absolute inset-0 bg-black/10" />
+          </div>
 
           <div className="container mx-auto flex flex-col items-center justify-start relative z-10">
             <div className="flex flex-col items-center justify-center w-full h-[100dvh] relative">
