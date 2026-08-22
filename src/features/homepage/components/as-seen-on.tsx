@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 import type { AsSeenOnContent } from "@/lib/types/content-types";
 
 /**
@@ -58,13 +56,6 @@ export function AsSeenOn({ content }: { content: AsSeenOnContent }) {
             — {content.attribution}
           </p>
         ) : null}
-
-        <Link
-          href={content.cta.href}
-          className="mt-10 flex h-[52px] w-[251.4px] items-center justify-center rounded-[8px] border border-white text-[17px] font-bold leading-[24.6px] text-white transition-colors hover:bg-white hover:text-[#0a0a0a] xl:mt-[97px]"
-        >
-          {content.cta.label}
-        </Link>
       </div>
     </section>
   );
