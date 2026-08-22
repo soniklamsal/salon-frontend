@@ -1,0 +1,231 @@
+/* =============================================================================
+   CRITICAL CSS - Above-the-fold styles only
+   This CSS is inlined in the <head> to prevent render-blocking.
+   Full styles load asynchronously after initial paint.
+   ============================================================================= */
+
+/* Base resets and cursor styles */
+*,::before,::after{box-sizing:border-box;border-width:0;border-style:solid;border-color:currentColor}
+html,:host{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:var(--font-jost),ui-sans-serif,system-ui,sans-serif;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}
+body{margin:0;line-height:inherit}
+button:not(:disabled),summary,[role="button"]:not([aria-disabled="true"]),input[type="file"]{cursor:pointer}
+input[type="file"]::file-selector-button{cursor:pointer}
+
+/* Essential typography */
+h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}
+p{margin:0}
+button,input{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}
+button{text-transform:none}
+button,[type='button'],[type='reset'],[type='submit']{-webkit-appearance:button;background-color:transparent;background-image:none}
+
+/* Essential layout utilities */
+.relative{position:relative}
+.absolute{position:absolute}
+.fixed{position:fixed}
+.inset-0{inset:0}
+.z-60{z-index:60}
+.flex{display:flex}
+.hidden{display:none}
+.h-full{height:100%}
+.min-h-full{min-height:100%}
+.min-h-svh{min-height:100svh}
+.w-full{width:100%}
+.flex-col{flex-direction:column}
+.items-center{align-items:center}
+.justify-center{justify-content:center}
+.justify-between{justify-content:space-between}
+.overflow-hidden{overflow:hidden}
+.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+
+/* CSS Variables */
+:root{
+  --font-jost:var(--font-jost);
+  --font-kiwi-maru:var(--font-kiwi-maru);
+  --font-poppins:var(--font-poppins);
+  --color-deep:#230a01;
+  --color-accent:#c7ff3d;
+  --color-gold:#fbb034;
+  --nav-logo-height:96px;
+  --nav-logo-height-mobile:64px;
+  --nav-logo-max-width:360px;
+  --header-padding:1.5rem;
+  --header-floor:74px;
+  --nav-logo-current:var(--nav-logo-height-mobile);
+  --header-height:max(var(--header-floor),calc(var(--nav-logo-current) + 2 * var(--header-padding)));
+}
+
+@media (min-width:1280px){
+  :root{
+    --header-floor:105px;
+    --nav-logo-current:var(--nav-logo-height);
+  }
+}
+
+/* Body base styles */
+body{
+  background:#ffffff;
+  color:var(--color-deep);
+  font-family:var(--font-jost),ui-sans-serif,system-ui,sans-serif;
+}
+
+/* Header - Critical above-the-fold component */
+.site-header-wrapper{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  z-index:60;
+  pointer-events:none;
+  background:transparent;
+  transition:background 0.3s ease;
+}
+
+@media (max-width:1279px){
+  .site-header-wrapper{
+    position:fixed;
+  }
+}
+
+.site-header-wrapper.scrolled{
+  background:transparent;
+  backdrop-filter:blur(10px);
+}
+
+.header{
+  padding:1.5rem 0;
+  pointer-events:none;
+  background:transparent;
+}
+
+.container{
+  width:100%;
+  margin:0 auto;
+  padding:0 2rem;
+  background:transparent;
+}
+
+.container.is--full{
+  max-width:100%;
+}
+
+.nav-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  pointer-events:none;
+}
+
+.nav-logo-row{
+  pointer-events:auto;
+  text-decoration:none;
+  color:#ffffff;
+  transition:opacity 0.3s ease;
+}
+
+.logo-text{
+  display:block;
+  font-size:1.125rem;
+  font-weight:700;
+  letter-spacing:5.04px;
+}
+
+.logo-image{
+  display:block;
+  height:var(--nav-logo-current);
+  width:auto;
+  max-width:var(--nav-logo-max-width);
+  object-fit:contain;
+}
+
+.desktop-nav{
+  align-items:center;
+  gap:2rem;
+  pointer-events:auto;
+}
+
+.desktop-nav-list{
+  display:flex;
+  align-items:center;
+  gap:2rem;
+  list-style:none;
+  margin:0;
+  padding:0;
+}
+
+.desktop-nav-link{
+  color:#ffffff;
+  text-decoration:none;
+  font-size:0.9375rem;
+  font-weight:700;
+  letter-spacing:0.02em;
+  padding:0.5rem 0;
+  transition:color 0.3s ease;
+}
+
+.nav-cta{
+  pointer-events:auto;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height:52px;
+  width:182px;
+  background:var(--color-accent);
+  color:var(--color-deep);
+  font-size:0.9375rem;
+  font-weight:700;
+  border-radius:8px;
+  text-decoration:none;
+  transition:opacity 0.3s ease;
+}
+
+.nav-row__right{
+  align-items:center;
+  gap:0.5rem;
+  pointer-events:none;
+}
+
+.nav-close-btn{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:0.75rem;
+  background:transparent;
+  border:none;
+  cursor:pointer;
+  padding:0.5rem 1rem;
+  color:#ffffff;
+  pointer-events:auto;
+  transition:color 0.3s ease;
+}
+
+.icon-wrap{
+  width:1.5rem;
+  height:1.5rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.menu-button-icon{
+  width:100%;
+  height:100%;
+  transition:all 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* Hero section - Critical above-the-fold */
+.font-brand{
+  font-family:var(--font-poppins),ui-serif,Georgia,Cambria,serif;
+}
+
+/* Essential responsive breakpoint utilities */
+@media (min-width:768px){
+  .md\:flex-1{flex:1 1 0%}
+  .md\:w-auto{width:auto}
+}
+
+@media (min-width:1280px){
+  .xl\:contents{display:contents}
+  .xl\:hidden{display:none}
+  .xl\:h-svh{height:100svh}
+  .xl\:min-h-\[600px\]{min-height:600px}
+}

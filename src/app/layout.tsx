@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Jost, Kiwi_Maru, Poppins } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { shadcn } from "@clerk/ui/themes";
@@ -69,11 +70,11 @@ export async function generateMetadata(): Promise<Metadata> {
       locale: "en_US",
       images: hero.stylistImage
         ? [
-            {
-              url: hero.stylistImage,
-              alt: hero.stylistImageAlt || site.metaTitle,
-            },
-          ]
+          {
+            url: hero.stylistImage,
+            alt: hero.stylistImageAlt || site.metaTitle,
+          },
+        ]
         : undefined,
     },
     twitter: {
@@ -105,6 +106,50 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${jost.variable} ${kiwiMaru.variable} ${poppins.variable} h-full antialiased`}
     >
+      <head>
+        {/* Critical inline CSS - prevents layout shift */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+              /* Critical above-the-fold styles */
+              *,::before,::after{box-sizing:border-box;border-width:0;border-style:solid;border-color:currentColor}
+              html{line-height:1.5;-webkit-text-size-adjust:100%;font-family:ui-sans-serif,system-ui,sans-serif}
+              body{margin:0;line-height:inherit;background:#fff;font-family:var(--font-jost),ui-sans-serif,system-ui,sans-serif}
+              .flex{display:flex}.hidden{display:none}.relative{position:relative}.absolute{position:absolute}.fixed{position:fixed}
+              .min-h-full{min-height:100%}.min-h-svh{min-height:100svh}.h-full{height:100%}.w-full{width:100%}
+              .flex-col{flex-direction:column}.items-center{align-items:center}.justify-between{justify-content:space-between}
+              .overflow-hidden{overflow:hidden}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+              .site-header-wrapper{position:absolute;top:0;left:0;width:100%;z-index:60;pointer-events:none;background:transparent}
+              @media(max-width:1279px){.site-header-wrapper{position:fixed}}
+            `,
+          }}
+        />
+
+        {/* Preconnect to external domains */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+
+        {/* Async CSS loading for non-critical styles */}
+        <Script
+          id="async-css-loader"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(){
+                var links=document.getElementsByTagName('link');
+                for(var i=0;i<links.length;i++){
+                  var link=links[i];
+                  if(link.rel==='stylesheet'&&link.getAttribute('data-n-p')){
+                    link.media='print';
+                    link.onload=function(){this.media='all'};
+                  }
+                }
+              })();
+            `,
+          }}
+        />
+      </head>
+
       {/*
         Browser extensions (ColorZilla adds `cz-shortcut-listen`, password
         managers add their own) write attributes onto <body> before React
