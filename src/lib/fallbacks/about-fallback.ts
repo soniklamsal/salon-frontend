@@ -29,7 +29,7 @@ const YEARS = new Date().getFullYear() - 2018;
  * by hand — there are only two copies and they change rarely.
  */
 export const FALLBACK_ABOUT: AboutContent = {
-  heroTitle: "Beauty Salon Experience",
+  heroTitle: "AJ Salon Experience",
   heroDate: "In Kathmandu since 2018",
   heroScrollPrompt: "Scroll to Explore Our Salon",
   heroVideoUrl:
