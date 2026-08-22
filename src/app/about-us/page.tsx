@@ -9,30 +9,27 @@ import { ScrollExpansionHero } from "@/components/shared/scroll-expansion-hero";
 import { MobileHero } from "@/components/shared/mobile-hero";
 import { getAboutContent } from "@/lib/api/about";
 import { buildAboutPage } from "@/lib/seo/structured-data";
+import { headers } from "next/headers";
 
 /**
  * About Us.
  *
- * A Server Component that fetches `/api/v1/about/` and composes the page.
- * Everything here is editable under "About us" in the Django admin, and
- * `getAboutContent()` falls back to the copy the page shipped with if the
- * backend is unreachable — so a stopped API costs editing, not serving.
- *
- * The composition is the point. Three client components are involved —
- * `ScrollToTop`, `BackButton` and `ScrollExpansionHero` — and the page's actual
- * content is passed to the last of them as `children`. Children are rendered on
- * the server and handed over as output, so they never enter the client
- * component's module graph and never reach the browser as JavaScript.
- *
- * This replaced a single `about-page-client.tsx` that carried `"use client"` at
- * the top and therefore shipped its team grid, stat block, intro copy and CTA
- * to the browser to support one count-up animation and one scroll reset.
- * 
- * Mobile and desktop now use separate hero components to prevent loading
- * desktop animations/GSAP on mobile devices.
+ * Server-side mobile detection ensures desktop component never loads on mobile.
+ * Uses user-agent to determine which hero component to render.
  */
+
+// Server-side mobile detection
+function isMobileDevice(userAgent: string): boolean {
+  return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(
+    userAgent.toLowerCase()
+  );
+}
+
 export default async function AboutPage() {
   const about = await getAboutContent();
+  const headersList = await headers();
+  const userAgent = headersList.get("user-agent") || "";
+  const isMobile = isMobileDevice(userAgent);
 
   const content = (
     <>
@@ -43,9 +40,6 @@ export default async function AboutPage() {
 
   return (
     <>
-      {/* No HairSalon node here: this page does not render the address or
-          hours, so it points at the homepage's node instead of restating
-          facts it is not showing. */}
       <JsonLd
         data={buildAboutPage(
           "About Us",
@@ -57,8 +51,19 @@ export default async function AboutPage() {
       <main className="flex-1 min-h-screen bg-background font-gotham">
         <BackButton />
 
-        {/* Desktop Hero - hidden on mobile */}
-        <div className="hidden md:block">
+        {isMobile ? (
+          // Mobile: Only render mobile hero - desktop component never loads
+          <MobileHero
+            mediaType="video"
+            mediaSrc={about.heroVideoUrl}
+            posterSrc={about.heroBgImage || undefined}
+            title={about.heroTitle}
+            date={about.heroDate}
+          >
+            {content}
+          </MobileHero>
+        ) : (
+          // Desktop: Only render desktop hero - mobile component never loads
           <ScrollExpansionHero
             mediaType="video"
             mediaSrc={about.heroVideoUrl}
@@ -71,20 +76,7 @@ export default async function AboutPage() {
           >
             {content}
           </ScrollExpansionHero>
-        </div>
-
-        {/* Mobile Hero - hidden on desktop */}
-        <div className="block md:hidden">
-          <MobileHero
-            mediaType="video"
-            mediaSrc={about.heroVideoUrl}
-            posterSrc={about.heroBgImage || undefined}
-            title={about.heroTitle}
-            date={about.heroDate}
-          >
-            {content}
-          </MobileHero>
-        </div>
+        )}
       </main>
     </>
   );
