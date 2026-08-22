@@ -5,7 +5,7 @@ import { ReactNode, useState, useEffect, useRef } from "react";
 /**
  * MOBILE-ONLY About Hero Component
  * Completely isolated from desktop - no shared code, no desktop artifacts
- * Aggressively preloads video to minimize black screen time
+ * Robust video loading with fallback to prevent permanent black screen
  */
 
 interface MobileAboutHeroProps {
@@ -22,34 +22,63 @@ export function MobileAboutHero({
     children,
 }: MobileAboutHeroProps) {
     const [videoLoaded, setVideoLoaded] = useState(false);
+    const [videoError, setVideoError] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
-        // Aggressively load video as soon as component mounts
         const video = videoRef.current;
-        if (video) {
-            // Force load
-            video.load();
+        if (!video) return;
 
-            // Try to play as soon as possible
-            const playPromise = video.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(() => {
-                    console.log("Autoplay prevented, will retry on user interaction");
-                });
+        // Fallback: Show video after 2 seconds even if events don't fire
+        timeoutRef.current = setTimeout(() => {
+            if (!videoLoaded) {
+                console.log("Video timeout - showing anyway");
+                setVideoLoaded(true);
             }
+        }, 2000);
+
+        // Try to load and play
+        video.load();
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+            playPromise.catch((error) => {
+                console.log("Autoplay prevented:", error);
+                // Still show the video even if autoplay fails
+                setVideoLoaded(true);
+            });
         }
-    }, []);
+
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, [videoLoaded]);
 
     const firstWord = title ? title.split(" ")[0] : "";
     const restOfTitle = title ? title.split(" ").slice(1).join(" ") : "";
 
     return (
-        <div className="relative w-full bg-black">
-            {/* Video Hero Section - Pure black until video loads */}
-            <section className="relative w-full h-screen bg-black overflow-hidden">
-                {/* Video Background - Hidden until fully loaded */}
-                <div className="absolute inset-0 bg-black">
+        <div className="relative w-full bg-background">
+            {/* Video Hero Section - Shows skeleton while loading */}
+            <section className="relative w-full h-screen overflow-hidden bg-background">
+                {/* Skeleton loader - visible until video loads */}
+                {!videoLoaded && (
+                    <div className="absolute inset-0 bg-gradient-to-b from-background-elevated to-background animate-pulse">
+                        <div className="h-full flex flex-col items-center justify-center px-6">
+                            {/* Skeleton title */}
+                            <div className="space-y-4 w-full max-w-md">
+                                <div className="h-3 bg-muted/20 rounded w-32 mx-auto"></div>
+                                <div className="h-16 bg-muted/30 rounded-lg w-full"></div>
+                                <div className="h-16 bg-muted/30 rounded-lg w-3/4 mx-auto"></div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Video Background */}
+                <div className="absolute inset-0">
                     <video
                         ref={videoRef}
                         src={videoUrl}
@@ -61,32 +90,42 @@ export function MobileAboutHero({
                         className="w-full h-full object-cover"
                         style={{
                             opacity: videoLoaded ? 1 : 0,
-                            transition: "opacity 0.5s ease-in-out",
+                            transition: "opacity 0.8s ease-in-out",
                         }}
                         onLoadedData={() => {
                             console.log("Video data loaded");
+                            if (timeoutRef.current) {
+                                clearTimeout(timeoutRef.current);
+                            }
                             setVideoLoaded(true);
                         }}
                         onCanPlay={() => {
                             console.log("Video can play");
+                            if (timeoutRef.current) {
+                                clearTimeout(timeoutRef.current);
+                            }
                             setVideoLoaded(true);
                         }}
-                        onLoadedMetadata={() => {
-                            console.log("Video metadata loaded");
+                        onError={(e) => {
+                            console.error("Video error:", e);
+                            setVideoError(true);
+                            setVideoLoaded(true); // Show fallback
                         }}
                     />
-                    {/* Dark overlay */}
-                    <div
-                        className="absolute inset-0 bg-black"
-                        style={{
-                            opacity: videoLoaded ? 0.4 : 1,
-                            transition: "opacity 0.5s ease-in-out",
-                        }}
-                    />
+                    {/* Subtle dark overlay - only when video loaded */}
+                    {videoLoaded && !videoError && (
+                        <div className="absolute inset-0 bg-black/30" />
+                    )}
                 </div>
 
                 {/* Hero Text Content */}
-                <div className="relative z-10 h-full flex flex-col items-center justify-center px-6">
+                <div
+                    className="relative z-10 h-full flex flex-col items-center justify-center px-6"
+                    style={{
+                        opacity: videoLoaded ? 1 : 0,
+                        transition: "opacity 0.8s ease-in-out",
+                    }}
+                >
                     <div className="text-center">
                         {date && (
                             <p className="font-gotham text-white font-bold uppercase tracking-wider text-xs mb-3">

@@ -40,22 +40,6 @@ export default async function AboutPage() {
 
   return (
     <>
-      {/* Critical CSS to prevent desktop flash on mobile - render-blocking by design */}
-      {isMobile && (
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `
-              /* Force black background immediately on mobile */
-              html, body { background-color: #000 !important; }
-              /* Prevent any desktop component artifacts */
-              .scroll-expansion-hero { display: none !important; }
-              /* Ensure smooth loading */
-              * { -webkit-tap-highlight-color: transparent; }
-            `,
-          }}
-        />
-      )}
-
       <JsonLd
         data={buildAboutPage(
           "About Us",
@@ -64,7 +48,7 @@ export default async function AboutPage() {
       />
       <ScrollToTop />
 
-      <main className="flex-1 min-h-screen bg-black font-gotham">
+      <main className="flex-1 min-h-screen bg-background font-gotham">
         <BackButton />
 
         {isMobile ? (
