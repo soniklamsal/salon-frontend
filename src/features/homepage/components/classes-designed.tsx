@@ -140,7 +140,7 @@ export function ClassesDesigned({ content }: { content: ClassesContent }) {
   return (
     <section ref={sectionRef} className="overflow-x-hidden overflow-y-visible bg-[#0a0a0a]">
       <div className="mx-auto w-full max-w-[1440px] px-5 pt-8 pb-20 md:px-10 md:pt-12 md:pb-28 xl:px-16 xl:pb-32">
-        <div className="mb-14 text-center">
+        <header className="mb-14 text-center">
           <h2 className="text-white uppercase">
             <span
               ref={classesRef}
@@ -155,11 +155,11 @@ export function ClassesDesigned({ content }: { content: ClassesContent }) {
               {content.headingBottom}
             </span>
           </h2>
-        </div>
+        </header>
 
         {/* Scroll-driven marquee. The phrase is repeated so the strip is always
             wider than the viewport; wrapping happens on half its own width. */}
-        <div className="relative mb-12 w-full overflow-hidden md:mb-16">
+        <div className="relative mb-12 w-full overflow-hidden md:mb-16" role="presentation">
           <div
             ref={scrollTextRef}
             className="flex whitespace-nowrap text-white"
@@ -170,6 +170,7 @@ export function ClassesDesigned({ content }: { content: ClassesContent }) {
               transform: "translate3d(0, 0, 0)",
               willChange: "transform",
             }}
+            aria-hidden
           >
             {Array.from({ length: 10 }).map((_, i) => (
               <span key={i} className="inline-block px-8">
@@ -179,65 +180,49 @@ export function ClassesDesigned({ content }: { content: ClassesContent }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {content.cards.map((item, i) => (
-            <Reveal key={item.id} delay={i * 0.1}>
-              <Link href={item.href} className="block">
-                <div className="group cursor-pointer">
-                  <div className="relative h-[350px] overflow-hidden rounded-lg shadow-xl sm:h-[300px] md:h-[450px]">
-                    {/*
-                      A clip wins over a photo while its URL is filled in, and
-                      the photo comes straight back when it is emptied. A
-                      precedence rule rather than a validation error, because
-                      every seeded card ships with an `image_url` — refusing to
-                      save a card carrying both made the video field unusable
-                      on all of them.
+            <li key={item.id}>
+              <Reveal delay={i * 0.1}>
+                <Link href={item.href} className="block">
+                  <article className="group cursor-pointer">
+                    <figure className="relative h-[350px] overflow-hidden rounded-lg shadow-xl sm:h-[300px] md:h-[450px]">
+                      {item.video?.src ? (
+                        <CardVideo
+                          video={item.video}
+                          label={item.name.replace("\n", " ")}
+                        />
+                      ) : item.image ? (
+                        <Image
+                          src={cldOptimize(item.image, 700)}
+                          alt={item.name.replace("\n", " ")}
+                          fill
+                          className="object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110"
+                          sizes="(min-width: 1024px) 25vw, 50vw"
+                          loading={i < 4 ? "eager" : "lazy"}
+                          priority={i < 2}
+                        />
+                      ) : (
+                        <span className="absolute inset-0 bg-blush" />
+                      )}
+                      <span className="absolute inset-0 bg-deep/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" aria-hidden />
+                    </figure>
 
-                      `cldOptimize` is a no-op on anything that is not a
-                      Cloudinary URL, so an image uploaded in the admin passes
-                      straight through.
-                    */}
-                    {item.video?.src ? (
-                      <CardVideo
-                        video={item.video}
-                        label={item.name.replace("\n", " ")}
-                      />
-                    ) : item.image ? (
-                      <Image
-                        src={cldOptimize(item.image, 700)}
-                        alt={item.name.replace("\n", " ")}
-                        fill
-                        className="object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110"
-                        sizes="(min-width: 1024px) 25vw, 50vw"
-                        loading={i < 4 ? "eager" : "lazy"}
-                        priority={i < 2}
-                      />
-                    ) : (
-                      <div className="absolute inset-0 bg-blush" />
-                    )}
-                    <div className="absolute inset-0 bg-deep/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                  </div>
+                    <div className="relative rounded-b-lg bg-[#141414] py-6 transition-shadow duration-300">
+                      <h3 className="pr-12 text-[22px] leading-[28px] font-bold whitespace-pre-line text-white uppercase transition-all duration-300 group-hover:text-[#c7ff3d] sm:text-[30px] sm:leading-[38px]">
+                        {item.name}
+                      </h3>
 
-                  <div className="relative rounded-b-lg bg-[#141414] py-6 transition-shadow duration-300">
-                    {/*
-                      The demo pins this at 30px/38px. At that size the longer
-                      names ("Gym Training", "Outdoor Activities") outrun the
-                      pr-12 gutter in a two-column mobile grid and the arrow
-                      lands on top of the text, so the size steps down below sm.
-                    */}
-                    <h3 className="pr-12 text-[22px] leading-[28px] font-bold whitespace-pre-line text-white uppercase transition-all duration-300 group-hover:text-[#c7ff3d] sm:text-[30px] sm:leading-[38px]">
-                      {item.name}
-                    </h3>
+                      <ArrowRightIcon className="absolute right-0 bottom-6 h-9 w-9 text-white transition-all duration-300 group-hover:translate-x-2 group-hover:scale-110 group-hover:text-[#c7ff3d]" />
 
-                    <ArrowRightIcon className="absolute right-0 bottom-6 h-9 w-9 text-white transition-all duration-300 group-hover:translate-x-2 group-hover:scale-110 group-hover:text-[#c7ff3d]" />
-
-                    <div className="absolute bottom-0 left-0 h-1 w-0 bg-gradient-to-r from-[#c7ff3d] to-transparent transition-all duration-500 group-hover:w-full" />
-                  </div>
-                </div>
-              </Link>
-            </Reveal>
+                      <span className="absolute bottom-0 left-0 h-1 w-0 bg-gradient-to-r from-[#c7ff3d] to-transparent transition-all duration-500 group-hover:w-full" aria-hidden />
+                    </div>
+                  </article>
+                </Link>
+              </Reveal>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </section>
   );

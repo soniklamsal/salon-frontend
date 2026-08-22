@@ -34,37 +34,24 @@ const DOTS = [
 
 export function OurStory({ content }: { content: OurStoryContent }) {
   return (
-    /* The wave band below overlaps this one by 130px, and its crest can be
-       opaque from its very top edge, so the copy needs that much clearance at
-       the foot or the Learn More button ends up underneath it. */
     <section className="w-full bg-[#0a0a0a] pb-[150px] pt-16 xl:py-0">
       <div className="mx-auto flex w-full max-w-[1440px] flex-col items-center gap-12 px-6 xl:h-[722px] xl:flex-row xl:items-start xl:gap-0 xl:px-0">
         {/* Photo collage — Figma 97:1186 */}
-        <div className="relative w-full max-w-[568px] shrink-0 xl:ml-[106px] xl:mt-[68px] xl:w-[568px]">
+        <figure className="relative w-full max-w-[568px] shrink-0 xl:ml-[106px] xl:mt-[68px] xl:w-[568px]">
           <div className="relative aspect-[568/491] w-full">
             {/* 97:1187 solid blush panel behind everything */}
-            <div className="absolute left-[4.58%] top-0 h-full w-[79.05%] bg-blush" />
+            <span aria-hidden className="absolute left-[4.58%] top-0 h-full w-[79.05%] bg-blush" />
 
             {/* 97:1188 the photograph */}
-            <div className="absolute left-[2.46%] top-[7.33%] h-[92.67%] w-[81.16%]">
-              {/*
-                Two things this asset needs. It is a transparent cut-out, so it
-                must keep its alpha channel — WebP, not JPEG, or the subject is
-                flattened onto a black box that hides the blush panel. And the
-                Figma fill carries an imageTransform crop (x 15.8%..84.1%,
-                y 9.7%..100%), which is baked into the exported file; the
-                cropped aspect matches the 461x455 box, so `cover` adds nothing.
-              */}
-              {content.image ? (
-                <Image
-                  src={content.image}
-                  alt={content.imageAlt}
-                  fill
-                  sizes="(max-width: 1280px) 90vw, 461px"
-                  className="object-cover"
-                />
-              ) : null}
-            </div>
+            {content.image ? (
+              <Image
+                src={content.image}
+                alt={content.imageAlt}
+                fill
+                sizes="(max-width: 1280px) 90vw, 461px"
+                className="absolute left-[2.46%] top-[7.33%] h-[92.67%] w-[81.16%] object-cover"
+              />
+            ) : null}
 
             {/* 97:1189 offset outline, 8px gradient stroke */}
             <PhotoFrameIcon className="absolute left-[15.49%] top-[4.28%] h-[91.45%] w-[76.06%]" />
@@ -78,15 +65,13 @@ export function OurStory({ content }: { content: OurStoryContent }) {
               />
             ))}
           </div>
-        </div>
+        </figure>
 
         {/* Copy — Figma 97:1098 */}
-        <div className="w-full max-w-[459px] xl:ml-[171px] xl:mt-[153px]">
+        <article className="w-full max-w-[459px] xl:ml-[171px] xl:mt-[153px]">
           <h2 className="text-[32px] font-bold leading-[1.2] text-white sm:text-[42px] xl:leading-[60.7px]">
             {content.heading}
           </h2>
-          {/* `whitespace-pre-line` so paragraph breaks typed in the admin
-              survive into the page. */}
           <p className="mt-[29px] whitespace-pre-line text-[18px] font-normal leading-[26px] text-white/80">
             {content.body}
           </p>
@@ -96,7 +81,7 @@ export function OurStory({ content }: { content: OurStoryContent }) {
           >
             {content.cta.label}
           </Link>
-        </div>
+        </article>
       </div>
     </section>
   );

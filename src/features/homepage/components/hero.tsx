@@ -181,75 +181,26 @@ export function Hero({ content }: { content: HeroContent }) {
         />
       ) : null}
 
+      {/* Container: relative positioning context, max-width constraint, flex column layout */}
       <div className="relative mx-auto flex min-h-0 w-full max-w-[1440px] flex-1 flex-col">
-        {/*
-          The nav used to sit here in flow (`LandingNav`). It has been replaced
-          by the kinetic header ported from the devis-gym demo, which paints
-          over this band from app/layout.tsx rather than inside it — so all that
-          is left here is the height it occupied. The 105 the vertical rhythm
-          documented above is measured against, and the 74 below xl, are now the
-          *floor* inside `--header-height` rather than the whole story: the logo
-          is sized in the admin, and a tall one makes the bar deeper than either
-          number. Reserving the variable is what stops it landing on the
-          headline.
-        */}
+        {/* Header height spacer */}
         <div aria-hidden className="h-[var(--header-height)] shrink-0" />
 
-        {/*
-          Copy and photo share one row below xl. At xl the wrapper goes
-          `display:contents` and vanishes from the box tree, handing both
-          children straight back to the outer column — which is what the desktop
-          layout below is measured against, and what lets the photo resolve its
-          `absolute` against the 1440 frame rather than against this wrapper.
-
-          `flex-1` on the copy therefore means width in the row and height in the
-          column; `min-h-0` and `min-w-0` are both spelled out for that reason.
-          Default `items-stretch` gives the copy the full row height to centre
-          itself in, and the photo opts out with `self-end`.
-        */}
+        {/* Content wrapper: flex row that becomes contents at xl breakpoint */}
         <div className="flex min-h-0 flex-1 flex-wrap content-center xl:contents">
-          {/*
-            Centred in whatever height is left under the nav, rather than pushed
-            down by the literal 237px — which is what overflowed the fold.
-
-            Biased downward by a top pad rather than centred flush.
-            `justify-center` absorbs the padding out of the free space, so a 97px
-            pad moves the copy down by half of it: at a band of exactly 831 it
-            lands back on its measured y of 342 (nav 105 + 97 pad + half of the
-            280 left over = 237). Flush centring sat at 293, a touch high under
-            the nav.
-
-            97 is also small enough to survive the 600px floor — at that height
-            the block still clears the nav with ~25px of air left under it.
-
-            `px-6` doubles as the gutter between the two columns: its right half
-            is the only thing separating the copy from the photo below xl.
-          */}
-          <div className="flex w-full min-h-0 min-w-0 flex-col justify-center px-6 pt-8 pb-4 sm:px-10 md:w-auto md:flex-1 md:pt-16 xl:px-0 xl:pt-[97px] xl:pb-0 xl:pl-[7.99%]">
-            {/* Figma 3:209 — the one line of Jost in an otherwise Poppins design. */}
+          {/* Main content: semantic article for the hero copy */}
+          <article className="flex w-full min-h-0 min-w-0 flex-col justify-center px-6 pt-8 pb-4 sm:px-10 md:w-auto md:flex-1 md:pt-16 xl:px-0 xl:pt-[97px] xl:pb-0 xl:pl-[7.99%]">
             <p style={{ color: content.eyebrowColor }}
               className="font-sans text-[clamp(12px,2.6vw,16px)] leading-[1.065] xl:text-[16px] xl:leading-[17.04px]">
               {content.eyebrow}
             </p>
 
-            {/*
-              Figma 3:208 breaks the line explicitly after "For A". Rendered as
-              two spans rather than a <br>, so the break applies only at the
-              measured width and the headline reflows naturally below it. The
-              two lines are separate fields in the admin for the same reason —
-              where the break falls is a design decision, not a wrap.
-
-              4.4vw reaches the measured 48px at ~1090 and is capped there, so it
-              is already sitting on the design value when xl restates it exactly.
-            */}
             <h1 style={{ color: content.headingColor }}
               className="mt-[22px] max-w-[513px] text-[clamp(22px,4.4vw,48px)] leading-[1.05] font-bold xl:text-[48px] xl:leading-[45.36px]">
               <span className="xl:block">{content.headlineLine1} </span>
               <span className="xl:block">{content.headlineLine2}</span>
             </h1>
 
-            {/* Figma 3:214 — 21/22.365 is a 1.065 ratio, far too tight to read at
-                phone widths, so the leading opens up below xl. */}
             <p style={{ color: content.bodyColor }}
               className="mt-[22px] max-w-[389px] text-[clamp(13px,2vw,21px)] leading-[1.6] xl:text-[21px] xl:leading-[22.365px]">
               {content.body}
@@ -260,44 +211,10 @@ export function Hero({ content }: { content: HeroContent }) {
               secondary={content.secondaryCta}
               content={content}
             />
-          </div>
+          </article>
 
-          {/*
-            Figma 3:215 — flush to the frame's right and bottom edges. Absolute
-            at xl so it can bleed to the bottom of the band; the right-hand
-            column of the row below that. `object-contain` because the source is
-            a transparent cutout whose aspect (990x859) already matches the
-            720x625 box.
-
-            Below xl it is sized off its own width and pinned to the foot of the
-            row, so it always sits on the same horizontal axis as the copy. It
-            takes a rising share of the row as there is more width to give it —
-            720/1440 is half the frame at the design size, and anything near that
-            on a phone would leave the headline nothing to wrap in.
-
-            `shrink-0` is load-bearing: this box's only child is a `fill` image,
-            which is absolutely positioned, so the box has no in-flow content and
-            its automatic minimum size is zero. A shrinkable flex item with a
-            zero min-content size collapses to nothing under pressure and takes
-            the photo with it.
-
-            At xl it is driven by height (625/831 = 75.21% of the band) rather
-            than by width, so it can never outgrow the band it sits in, and
-            capped at the measured 625 so it never grows past its design size on
-            a tall window, where it would otherwise reach left across the
-            headline.
-
-            Both axes are spelled out in `svh` instead of letting `aspect-ratio`
-            derive the width: the band is 100svh at xl, so 75.21svh is the same
-            height, and 86.64svh is that height through the 720/625 ratio. An
-            absolutely positioned box with `w-auto` cannot be trusted to take its
-            width from the ratio — same zero-content problem as above, which
-            collapses it horizontally instead. The two maxes cap together (both
-            bite at exactly 831px of viewport), so the box stays on ratio at
-            every size — which the watermark depends on, being positioned in
-            percentages of this box.
-          */}
-          <div className="relative mr-0 ml-auto aspect-[720/625] w-full max-w-[420px] shrink-0 self-end md:mx-0 md:w-[44%] md:max-w-none lg:w-[48%] xl:absolute xl:right-0 xl:bottom-0 xl:h-[75.21svh] xl:max-h-[625px] xl:w-[86.64svh] xl:max-w-[720px]">
+          {/* Hero image container */}
+          <figure className="relative mr-0 ml-auto aspect-[720/625] w-full max-w-[420px] shrink-0 self-end md:mx-0 md:w-[44%] md:max-w-none lg:w-[48%] xl:absolute xl:right-0 xl:bottom-0 xl:h-[75.21svh] xl:max-h-[625px] xl:w-[86.64svh] xl:max-w-[720px]">
             {content.stylistImage ? (
               <Image
                 src={content.stylistImage}
@@ -309,7 +226,7 @@ export function Hero({ content }: { content: HeroContent }) {
               />
             ) : null}
             <CapeWatermark src={content.watermarkImage} />
-          </div>
+          </figure>
         </div>
       </div>
     </section>

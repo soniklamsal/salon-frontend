@@ -179,7 +179,7 @@ export function WhoWeAre({ content }: { content: WhoWeAreContent }) {
         </p>
 
         <div className="mt-12 flex md:justify-end">
-          <div className="max-w-sm">
+          <address className="max-w-sm not-italic">
             <p className="text-[clamp(16px,2vw,22px)] leading-[1.4] text-white/80">
               {content.body}
             </p>
@@ -189,7 +189,7 @@ export function WhoWeAre({ content }: { content: WhoWeAreContent }) {
             >
               {content.cta.label}
             </Link>
-          </div>
+          </address>
         </div>
       </div>
     </section>

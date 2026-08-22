@@ -70,45 +70,36 @@ export function FollowUs({
   site: SiteSettings;
 }) {
   return (
-    /*
-     * Figma starts this band at y=2807 while the wave above runs to 2968, so it
-     * sits 161px underneath it. `z-0` keeps it behind the wave (it comes later
-     * in the DOM, which would otherwise paint its flat top edge over the wave's
-     * curve); its own content starts 305px down, well clear of the overlap.
-     */
     <section className="relative z-0 -mt-[145px] w-full overflow-hidden bg-[#0a0a0a] xl:-mt-[161px]">
-      {/* The wave dips ~140px into this band on narrow screens, so the badge
-          needs to start below that. At xl the Figma offsets take over. */}
       <div className="relative mx-auto w-full max-w-[1440px] px-6 pb-20 pt-[170px] xl:h-[797px] xl:px-0 xl:py-0">
         <VerticalSocialLabels links={social} />
 
         {/* 97:1110 — decorative gradient rule between the badge and the copy */}
-        <div
+        <span
           aria-hidden
           className="absolute left-[700px] top-[193px] hidden h-[526px] w-[40px] rounded-[27px] bg-[linear-gradient(180deg,#c7ff3d_25%,#a8e02c_82%)] xl:block"
         />
 
-        <div className="flex flex-col items-center gap-14 xl:block xl:gap-0">
-          <div className="xl:absolute xl:left-[187px] xl:top-[305px]">
-            <SalonBadge
-              logo={site.logo}
-              brandName={site.brandName}
-              caption={site.badgeCaption}
-            />
-          </div>
+        {/* Flattened: removed unnecessary wrapping divs */}
+        <div className="xl:absolute xl:left-[187px] xl:top-[305px]">
+          <SalonBadge
+            logo={site.logo}
+            brandName={site.brandName}
+            caption={site.badgeCaption}
+          />
+        </div>
 
-          {/* 97:1152 — Frame 17, auto-layout VERTICAL gap 69 */}
-          <div className="flex w-full max-w-[283px] flex-col items-center xl:absolute xl:left-[915px] xl:top-[357.5px]">
-            <h2 className="text-center text-[32px] font-bold leading-[1.2] text-white sm:text-[42px] xl:leading-[60.7px]">
-              {content.heading}
-            </h2>
-            <p className="mt-[12px] text-center text-[18px] font-medium leading-[26px] text-white/80">
-              {content.body}
-            </p>
-            <div className="mt-[69px]">
-              <SocialIconRow links={social} />
-            </div>
-          </div>
+        {/* 97:1152 — Frame 17, auto-layout VERTICAL gap 69 */}
+        <div className="mt-14 w-full max-w-[283px] mx-auto flex flex-col items-center xl:absolute xl:left-[915px] xl:top-[357.5px] xl:mt-0 xl:mx-0">
+          <h2 className="text-center text-[32px] font-bold leading-[1.2] text-white sm:text-[42px] xl:leading-[60.7px]">
+            {content.heading}
+          </h2>
+          <p className="mt-[12px] text-center text-[18px] font-medium leading-[26px] text-white/80">
+            {content.body}
+          </p>
+          <nav className="mt-[69px]" aria-label="Social media links">
+            <SocialIconRow links={social} />
+          </nav>
         </div>
       </div>
     </section>

@@ -95,8 +95,8 @@ function TeamCard({ member }: { member: TeamMember }) {
   );
 
   return (
-    <div className="group">
-      <div className="relative h-[360px] w-full max-w-[285px] mx-auto overflow-hidden bg-background-elevated">
+    <article className="group">
+      <figure className="relative h-[360px] w-full max-w-[285px] mx-auto overflow-hidden bg-background-elevated">
         <Image
           src={cldOptimize(member.image, 600)}
           alt={member.name}
@@ -110,7 +110,7 @@ function TeamCard({ member }: { member: TeamMember }) {
         {/* Hidden entirely when nobody has added links for this person, rather
             than sliding up an empty yellow bar on hover. */}
         {socials.length > 0 && (
-          <div className="absolute bottom-0 left-0 right-0 bg-[#d4ff00] py-3 px-6 flex gap-3 justify-center translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
+          <nav className="absolute bottom-0 left-0 right-0 bg-[#d4ff00] py-3 px-6 flex gap-3 justify-center translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" aria-label={`${member.name} social links`}>
             {socials.map(([platform, url]) => (
               <a
                 key={platform}
@@ -130,9 +130,9 @@ function TeamCard({ member }: { member: TeamMember }) {
                 </svg>
               </a>
             ))}
-          </div>
+          </nav>
         )}
-      </div>
+      </figure>
 
       <div className="bg-background-elevated py-6 px-6 w-full max-w-[285px] mx-auto">
         <h3 className="font-oswald text-[24px] leading-[32px] font-bold uppercase tracking-tight mb-1 text-white">
@@ -142,7 +142,7 @@ function TeamCard({ member }: { member: TeamMember }) {
           {member.role}
         </p>
       </div>
-    </div>
+    </article>
   );
 }
 
@@ -155,7 +155,7 @@ function TeamCard({ member }: { member: TeamMember }) {
  */
 export function AboutIntro({ about }: { about: AboutContent }) {
   return (
-    <div className="max-w-7xl mx-auto">
+    <header className="max-w-7xl mx-auto">
       <div className="text-center mb-16">
         <p
           className="font-gotham font-bold uppercase tracking-wider mb-1 lg:mb-1"
@@ -191,7 +191,7 @@ export function AboutIntro({ about }: { about: AboutContent }) {
           <IntroColumn key={column.id} column={column} />
         ))}
       </div>
-    </div>
+    </header>
   );
 }
 

@@ -82,7 +82,8 @@ export function MotivationLines({ content }: { content: MotivationContent }) {
       className="overflow-hidden bg-[#0a0a0a] py-14 sm:py-20 md:py-28 lg:py-32"
     >
       <div className="mx-auto w-full max-w-[1440px] px-5 md:px-10 xl:px-16">
-        <div className="flex flex-col gap-6 sm:gap-8 md:gap-10 lg:gap-12">
+        {/* Flattened: removed wrapper div, applied styles directly to hgroup */}
+        <hgroup className="flex flex-col gap-6 sm:gap-8 md:gap-10 lg:gap-12">
           {lines.map((line, i) => (
             <div
               key={`${i}-${line}`}
@@ -102,7 +103,7 @@ export function MotivationLines({ content }: { content: MotivationContent }) {
               </h2>
             </div>
           ))}
-        </div>
+        </hgroup>
       </div>
     </section>
   );
