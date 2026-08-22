@@ -1,0 +1,14 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="freshCutGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#c7ff3d;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a8e02c;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="#0a0a0a"/>
+  <circle cx="200" cy="150" r="80" fill="url(#freshCutGrad)" opacity="0.2"/>
+  <path d="M160 120 L160 180 M180 110 L180 190 M200 100 L200 200 M220 110 L220 190 M240 120 L240 180" 
+        stroke="#c7ff3d" stroke-width="3" stroke-linecap="round"/>
+  <text x="200" y="250" font-family="Arial, sans-serif" font-size="24" font-weight="bold" 
+        fill="#c7ff3d" text-anchor="middle">Fresh Cut</text>
+</svg>

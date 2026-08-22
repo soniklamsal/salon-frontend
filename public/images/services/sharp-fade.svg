@@ -1,0 +1,14 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="fadeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fbb034;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ff9500;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="#0a0a0a"/>
+  <circle cx="200" cy="150" r="80" fill="url(#fadeGrad)" opacity="0.2"/>
+  <path d="M150 100 L150 200 M170 110 L170 190 M190 120 L190 180 M210 130 L210 170 M230 140 L230 160" 
+        stroke="#fbb034" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+  <text x="200" y="250" font-family="Arial, sans-serif" font-size="24" font-weight="bold" 
+        fill="#fbb034" text-anchor="middle">Sharp Fade</text>
+</svg>

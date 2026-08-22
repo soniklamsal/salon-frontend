@@ -4,6 +4,7 @@ import type {
   BookingCopy,
   Service,
 } from "@/lib/types/content-types";
+import { FALLBACK_BOOKING_CONFIG } from "@/lib/fallbacks/booking-fallback";
 
 /**
  * Server-side reader for the booking form's options.
@@ -138,8 +139,8 @@ export async function getBookingConfig(): Promise<BookingConfig> {
     console.warn(
       `[booking] ${API_BASE}/booking-config/ unavailable (${
         error instanceof Error ? error.message : String(error)
-      }) — the booking form will render as unavailable.`
+      }) — using fallback booking configuration.`
     );
-    return EMPTY_BOOKING_CONFIG;
+    return FALLBACK_BOOKING_CONFIG;
   }
 }
