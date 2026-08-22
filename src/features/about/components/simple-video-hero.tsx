@@ -119,9 +119,9 @@ export function SimpleVideoHero({
                     )}
                 </div>
 
-                {/* Hero Text Content - Positioned at bottom of screen */}
+                {/* Hero Text Content - Centered on mobile, bottom on desktop */}
                 <div
-                    className="relative z-10 h-full flex flex-col items-center justify-end pb-12 md:pb-16 lg:pb-20 px-6"
+                    className="relative z-10 h-full flex flex-col items-center justify-center md:justify-end md:pb-16 lg:pb-20 px-6"
                     style={{
                         opacity: videoLoaded ? 1 : 0,
                         transition: "opacity 0.8s ease-in-out",
