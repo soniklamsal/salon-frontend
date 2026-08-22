@@ -247,18 +247,12 @@ export function AboutContentSections({ about }: { about: AboutContent }) {
               <p className="text-muted text-base leading-relaxed mb-8">
                 {about.ctaBody}
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex justify-center">
                 <Link
                   href={about.ctaPrimary.href}
-                  className="inline-block px-8 py-4 bg-accent text-black font-bold uppercase tracking-wide rounded-none"
+                  className="inline-block px-8 py-4 bg-accent text-black font-bold uppercase tracking-wide rounded-none hover:bg-accent/90 transition-colors"
                 >
                   {about.ctaPrimary.label}
-                </Link>
-                <Link
-                  href={about.ctaSecondary.href}
-                  className="inline-block px-8 py-4 bg-transparent border border-zinc-700 text-white font-bold uppercase tracking-wide rounded-none"
-                >
-                  {about.ctaSecondary.label}
                 </Link>
               </div>
             </div>
