@@ -4,6 +4,14 @@ Next.js 16 (App Router) storefront for the salon. Every word and image on the
 public pages is edited in the Django admin and fetched from `/api/v1/`; this app
 renders it and takes bookings.
 
+## Quick Deploy to Vercel
+
+**Deploy without backend or environment variables** - the app works with fallback content:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/soniklamsal/salon-frontend)
+
+The application is designed to build and run even without a backend connection. It will use bundled fallback content and automatically disable authentication. See [VERCEL-DEPLOYMENT.md](VERCEL-DEPLOYMENT.md) for detailed instructions.
+
 ## Running it
 
 ```bash
@@ -14,7 +22,7 @@ npm run dev          # http://localhost:3000 — needs the Django API on :8001
 | Command | Does |
 | --- | --- |
 | `npm run dev` | Development server |
-| `npm run build` | Production build |
+| `npm run build` | Production build (works without backend) |
 | `npm start` | Serve the production build |
 | `npm run check` | lint + typecheck + tests |
 | `npm run check:auth` | Report whether Clerk keys are configured |
@@ -22,6 +30,11 @@ npm run dev          # http://localhost:3000 — needs the Django API on :8001
 Copy `.env.example` to `.env.local` first. `SALON_SITE_URL` **must** be set to
 the real origin in production — unset, the app publishes `localhost:3000` as its
 canonical URL to every crawler.
+
+## Deployment
+
+- **[VERCEL-DEPLOYMENT.md](VERCEL-DEPLOYMENT.md)** - Complete guide for deploying to Vercel (with or without backend)
+- **[PRODUCTION-SETUP.md](PRODUCTION-SETUP.md)** - Production configuration for ajunisexsalon.com with Clerk
 
 ## Where things live
 
