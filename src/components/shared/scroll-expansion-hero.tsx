@@ -205,6 +205,16 @@ const ScrollExpansionHero = ({
       const deltaY = touchStartY - touchY;
       const atTop = window.scrollY <= 5;
 
+      // On mobile, skip the expansion effect and go straight to expanded state
+      if (isMobileState && !horizontalExpansionComplete) {
+        setHorizontalExpansionComplete(true);
+        setShowContent(true);
+        setMediaFullyExpanded(true);
+        setScrollProgress(1);
+        progressRef.current = 1;
+        return;
+      }
+
       if (mediaFullyExpanded && deltaY < -20 && atTop) {
         setMediaFullyExpanded(false);
         setHorizontalExpansionComplete(false);
@@ -262,12 +272,12 @@ const ScrollExpansionHero = ({
     window.addEventListener(
       "touchstart",
       handleTouchStart as unknown as EventListener,
-      { passive: false }
+      { passive: true }
     );
     window.addEventListener(
       "touchmove",
       handleTouchMove as unknown as EventListener,
-      { passive: false }
+      { passive: true }
     );
     window.addEventListener("touchend", handleTouchEnd as EventListener);
 
@@ -292,7 +302,7 @@ const ScrollExpansionHero = ({
     // `scrollProgress` is deliberately absent: the handlers read `progressRef`
     // instead, so this effect no longer re-runs -- and re-registers five window
     // listeners -- on every wheel event.
-  }, [mediaFullyExpanded, horizontalExpansionComplete, touchStartY]);
+  }, [mediaFullyExpanded, horizontalExpansionComplete, touchStartY, isMobileState]);
 
   useEffect(() => {
     const checkIfMobile = (): void => {
@@ -301,7 +311,17 @@ const ScrollExpansionHero = ({
       const width = window.innerWidth;
       const height = window.innerHeight;
       setWindowDimensions({ width, height });
-      setIsMobileState(width < 768);
+      const isMobile = width < 768;
+      setIsMobileState(isMobile);
+
+      // Skip expansion animation on mobile - go straight to full screen
+      if (isMobile && !horizontalExpansionComplete) {
+        setHorizontalExpansionComplete(true);
+        setShowContent(true);
+        setMediaFullyExpanded(true);
+        setScrollProgress(1);
+        progressRef.current = 1;
+      }
     };
 
     checkIfMobile();
@@ -310,7 +330,7 @@ const ScrollExpansionHero = ({
       window.addEventListener("resize", checkIfMobile);
       return () => window.removeEventListener("resize", checkIfMobile);
     }
-  }, []);
+  }, [horizontalExpansionComplete]);
 
   const mediaWidth = horizontalExpansionComplete
     ? isMobileState
