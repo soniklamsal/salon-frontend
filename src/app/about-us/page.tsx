@@ -6,6 +6,7 @@ import { ScrollToTop } from "@/features/about/components/scroll-to-top";
 import { BackButton } from "@/components/shared/back-button";
 import { JsonLd } from "@/components/shared/json-ld";
 import { ScrollExpansionHero } from "@/components/shared/scroll-expansion-hero";
+import { MobileHero } from "@/components/shared/mobile-hero";
 import { getAboutContent } from "@/lib/api/about";
 import { buildAboutPage } from "@/lib/seo/structured-data";
 
@@ -26,9 +27,19 @@ import { buildAboutPage } from "@/lib/seo/structured-data";
  * This replaced a single `about-page-client.tsx` that carried `"use client"` at
  * the top and therefore shipped its team grid, stat block, intro copy and CTA
  * to the browser to support one count-up animation and one scroll reset.
+ * 
+ * Mobile and desktop now use separate hero components to prevent loading
+ * desktop animations/GSAP on mobile devices.
  */
 export default async function AboutPage() {
   const about = await getAboutContent();
+
+  const content = (
+    <>
+      <AboutIntro about={about} />
+      <AboutContentSections about={about} />
+    </>
+  );
 
   return (
     <>
@@ -45,26 +56,35 @@ export default async function AboutPage() {
 
       <main className="flex-1 min-h-screen bg-background font-gotham">
         <BackButton />
-        {/* `bgImageSrc`/`posterSrc` skip `cldOptimize`, unlike the photos further
-            down: that asset is already a small 118KB file, and asking Cloudinary
-            for a 1920-wide derivative upscales it to 256KB. */}
-        <ScrollExpansionHero
-          mediaType="video"
-          mediaSrc={about.heroVideoUrl}
-          // One image covers both slots. It is the backdrop on arrival, and it
-          // stands in inside the video frame until the video data arrives --
-          // without a poster that moment is a black rectangle. There is no
-          // separate poster field to manage.
-          posterSrc={about.heroBgImage || undefined}
-          bgImageSrc={about.heroBgImage}
-          title={about.heroTitle}
-          date={about.heroDate}
-          scrollToExpand={about.heroScrollPrompt}
-          textBlend
-        >
-          <AboutIntro about={about} />
-          <AboutContentSections about={about} />
-        </ScrollExpansionHero>
+
+        {/* Desktop Hero - hidden on mobile */}
+        <div className="hidden md:block">
+          <ScrollExpansionHero
+            mediaType="video"
+            mediaSrc={about.heroVideoUrl}
+            posterSrc={about.heroBgImage || undefined}
+            bgImageSrc={about.heroBgImage}
+            title={about.heroTitle}
+            date={about.heroDate}
+            scrollToExpand={about.heroScrollPrompt}
+            textBlend
+          >
+            {content}
+          </ScrollExpansionHero>
+        </div>
+
+        {/* Mobile Hero - hidden on desktop */}
+        <div className="block md:hidden">
+          <MobileHero
+            mediaType="video"
+            mediaSrc={about.heroVideoUrl}
+            posterSrc={about.heroBgImage || undefined}
+            title={about.heroTitle}
+            date={about.heroDate}
+          >
+            {content}
+          </MobileHero>
+        </div>
       </main>
     </>
   );
