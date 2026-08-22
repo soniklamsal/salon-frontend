@@ -350,7 +350,8 @@ const ScrollExpansionHero = ({
     (isMobileState
       ? windowDimensions.height - 400
       : windowDimensions.height - 400);
-  const textTranslateX = scrollProgress * (isMobileState ? 180 : 150);
+  // Disable text translation/GSAP effects on mobile - keep text static
+  const textTranslateX = isMobileState ? 0 : scrollProgress * 150;
 
   const firstWord = title ? title.split(" ")[0] : "";
   const restOfTitle = title ? title.split(" ").slice(1).join(" ") : "";
@@ -367,33 +368,36 @@ const ScrollExpansionHero = ({
               -rendered paint was a black screen that only filled in once React
               had hydrated. `1 - scrollProgress` is already 1 at rest, so the
               scroll fade is unchanged -- only the blank first frame is gone. */}
-          <div
-            className="absolute inset-0 z-0 h-full"
-            style={{
-              opacity: 1 - scrollProgress,
-              transition: "opacity 0.1s ease-out",
-            }}
-          >
-            <Image
-              src={bgImageSrc}
-              alt="Background"
-              width={1920}
-              height={1080}
-              className="w-screen h-screen"
+          {/* Hide background image on mobile - only show video */}
+          {!isMobileState && (
+            <div
+              className="absolute inset-0 z-0 h-full"
               style={{
-                objectFit: "cover",
-                objectPosition: "center",
+                opacity: 1 - scrollProgress,
+                transition: "opacity 0.1s ease-out",
               }}
-              // The LCP element of this page: full-viewport and above the fold.
-              // It was `loading="lazy"`, which cannot fire until hydration has
-              // run the intersection observer, so the fetch queued behind the
-              // JS bundle. `priority` preloads it from the document head at
-              // high fetch priority instead.
-              priority
-              sizes="100vw"
-            />
-            <div className="absolute inset-0 bg-black/10" />
-          </div>
+            >
+              <Image
+                src={bgImageSrc}
+                alt="Background"
+                width={1920}
+                height={1080}
+                className="w-screen h-screen"
+                style={{
+                  objectFit: "cover",
+                  objectPosition: "center",
+                }}
+                // The LCP element of this page: full-viewport and above the fold.
+                // It was `loading="lazy"`, which cannot fire until hydration has
+                // run the intersection observer, so the fetch queued behind the
+                // JS bundle. `priority` preloads it from the document head at
+                // high fetch priority instead.
+                priority
+                sizes="100vw"
+              />
+              <div className="absolute inset-0 bg-black/10" />
+            </div>
+          )}
 
           <div className="container mx-auto flex flex-col items-center justify-start relative z-10">
             <div className="flex flex-col items-center justify-center w-full h-[100dvh] relative">
