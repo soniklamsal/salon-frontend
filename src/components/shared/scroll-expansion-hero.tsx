@@ -67,10 +67,11 @@ const ScrollExpansionHero = ({
   const [horizontalExpansionComplete, setHorizontalExpansionComplete] =
     useState<boolean>(false);
   const [touchStartY, setTouchStartY] = useState<number>(0);
-  const [isMobileState, setIsMobileState] = useState<boolean>(false);
+  // Initialize as mobile by default to prevent desktop flash on mobile
+  const [isMobileState, setIsMobileState] = useState<boolean>(true);
   const [windowDimensions, setWindowDimensions] = useState({
-    width: 1200,
-    height: 800,
+    width: typeof window !== 'undefined' ? window.innerWidth : 375,
+    height: typeof window !== 'undefined' ? window.innerHeight : 667,
   });
   // Stands in for framer-motion's `initial` — the first paint uses the initial
   // opacity, the frame after mount transitions to the animated one.
@@ -110,6 +111,14 @@ const ScrollExpansionHero = ({
   // Prevent body scroll during horizontal expansion
   useEffect(() => {
     if (typeof window === "undefined") return;
+
+    // On mobile, skip all scroll locking - let native scroll work
+    if (isMobileState) {
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.width = "";
+      return;
+    }
 
     // This component drives its own wheel-based expansion progress and manually
     // locks body scroll during that phase. Lenis (the site-wide smooth-scroll
@@ -154,9 +163,12 @@ const ScrollExpansionHero = ({
       window.removeEventListener("lenis:ready", applyLenisState);
       getLenis()?.start();
     };
-  }, [horizontalExpansionComplete]);
+  }, [horizontalExpansionComplete, isMobileState]);
 
   useEffect(() => {
+    // Skip all scroll/touch hijacking on mobile - let native scrolling work
+    if (isMobileState) return;
+
     const handleWheel = (e: WheelEvent) => {
       if (typeof window === "undefined") return;
 
