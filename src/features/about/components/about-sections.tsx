@@ -54,20 +54,20 @@ export const COLUMN_BODY_STYLE = {
 /** A column is bullets or prose — whichever the admin filled in. */
 function IntroColumn({ column }: { column: AboutColumn }) {
   return (
-    <div className="flex-1 space-y-4">
+    <div className="flex-1 space-y-3 md:space-y-4 w-full">
       <h3
-        className="font-gotham font-bold uppercase tracking-wider"
+        className="font-gotham font-bold uppercase tracking-wider text-sm md:text-base break-words"
         style={COLUMN_HEADING_STYLE}
       >
         {column.heading}
       </h3>
 
       {column.items.length > 0 && (
-        <ul className="space-y-3">
+        <ul className="space-y-2 md:space-y-3">
           {column.items.map((item) => (
-            <li key={item.id} className="flex items-center gap-3">
-              <span className="w-2 h-2 bg-accent rounded-full"></span>
-              <span className="font-gotham" style={COLUMN_BODY_STYLE}>
+            <li key={item.id} className="flex items-start gap-2 md:gap-3">
+              <span className="w-2 h-2 bg-accent rounded-full flex-shrink-0 mt-1.5"></span>
+              <span className="font-gotham text-xs sm:text-sm break-words flex-1" style={COLUMN_BODY_STYLE}>
                 {item.text}
               </span>
             </li>
@@ -81,7 +81,7 @@ function IntroColumn({ column }: { column: AboutColumn }) {
         .map((paragraph) => paragraph.trim())
         .filter(Boolean)
         .map((paragraph, index) => (
-          <p key={index} className="font-gotham" style={COLUMN_BODY_STYLE}>
+          <p key={index} className="font-gotham text-xs sm:text-sm break-words" style={COLUMN_BODY_STYLE}>
             {paragraph}
           </p>
         ))}
@@ -155,20 +155,18 @@ function TeamCard({ member }: { member: TeamMember }) {
  */
 export function AboutIntro({ about }: { about: AboutContent }) {
   return (
-    <header className="max-w-7xl mx-auto">
-      <div className="text-center mb-16">
+    <header className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 lg:py-16">
+      <div className="text-center mb-12 md:mb-16">
         <p
-          className="font-gotham font-bold uppercase tracking-wider mb-1 lg:mb-1"
+          className="font-gotham font-bold uppercase tracking-wider mb-1 lg:mb-1 text-xs sm:text-sm"
           style={COLUMN_HEADING_STYLE}
         >
           {about.eyebrow}
         </p>
 
         <h1
-          className="font-gotham-condensed font-bold uppercase leading-[0.9] tracking-tight relative mb-3 lg:mb-4"
+          className="font-gotham-condensed font-bold uppercase leading-[0.9] tracking-tight relative mb-3 lg:mb-4 text-4xl sm:text-5xl md:text-6xl lg:text-7xl"
           style={{
-            fontSize: "81px",
-            lineHeight: "81px",
             fontWeight: 700,
             color: "rgb(255, 255, 255)",
           }}
@@ -181,12 +179,12 @@ export function AboutIntro({ about }: { about: AboutContent }) {
           </span>
         </h1>
 
-        <p className="font-gotham max-w-4xl mx-auto" style={COLUMN_BODY_STYLE}>
+        <p className="font-gotham max-w-4xl mx-auto text-xs sm:text-sm mb-12 md:mb-16" style={COLUMN_BODY_STYLE}>
           {about.introBody}
         </p>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-8 items-start">
+      <div className="flex flex-col lg:flex-row gap-10 md:gap-12 lg:gap-8 items-start">
         {about.columns.map((column) => (
           <IntroColumn key={column.id} column={column} />
         ))}

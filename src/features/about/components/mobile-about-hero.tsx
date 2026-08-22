@@ -106,7 +106,7 @@ export function MobileAboutHero({
             </section>
 
             {/* Content Section - Always visible */}
-            <div className="relative z-20 bg-background">
+            <div className="relative z-20 bg-background pt-12 md:pt-16 lg:pt-20">
                 {children}
             </div>
         </div>
