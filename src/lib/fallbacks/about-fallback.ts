@@ -33,9 +33,9 @@ export const FALLBACK_ABOUT: AboutContent = {
   heroDate: "In Kathmandu since 2018",
   heroScrollPrompt: "Scroll to Explore Our Salon",
   heroVideoUrl:
-    "https://res.cloudinary.com/ufiebboc/video/upload/f_auto,q_auto/hfjpk00y9fqeznekhrh9",
+    "https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.mp4",
   heroBgImage:
-    "https://res.cloudinary.com/ufiebboc/image/upload/v1786268716/devis-gym/devis/IMG_7361.JPG.jpg",
+    "https://res.cloudinary.com/dr54mqokd/image/upload/v1787363940/media/about/pexels-artbovich-7750137_wdiaq5.jpg",
   eyebrow: "About Our Salon",
   headingLine1: "More Than",
   headingLine2: "Just A Salon.",
