@@ -38,7 +38,6 @@ export function SmoothScrollProvider({
       infinite: false,
       syncTouch: true,
       syncTouchLerp: 0.1,
-      touchInertiaMultiplier: 35,
     });
     lenisRef.current = lenis;
 

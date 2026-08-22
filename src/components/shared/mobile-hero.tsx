@@ -1,10 +1,12 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 
 /**
  * Simple mobile-only hero component for About page
  * No animations, no GSAP, just clean video background with content
+ * Completely separate from desktop - no background images loaded
+ * Shows black screen until video is ready to prevent flash
  */
 
 interface MobileHeroProps {
@@ -19,37 +21,41 @@ interface MobileHeroProps {
 export function MobileHero({
     mediaType = "video",
     mediaSrc,
-    posterSrc,
     title,
     date,
     children,
 }: MobileHeroProps) {
+    const [videoReady, setVideoReady] = useState(false);
     const firstWord = title ? title.split(" ")[0] : "";
     const restOfTitle = title ? title.split(" ").slice(1).join(" ") : "";
 
     return (
         <div className="relative min-h-screen bg-black">
-            {/* Full-screen video background */}
-            <div className="fixed inset-0 z-0">
+            {/* Full-screen video background - NO poster to prevent image flash */}
+            <div className="fixed inset-0 z-0 bg-black">
                 {mediaType === "video" ? (
                     <video
                         src={mediaSrc}
-                        poster={posterSrc}
                         autoPlay
                         muted
                         loop
                         playsInline
                         preload="auto"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-opacity duration-500"
+                        style={{ opacity: videoReady ? 1 : 0 }}
                         controls={false}
                         disablePictureInPicture
                         disableRemotePlayback
+                        onLoadedData={() => setVideoReady(true)}
+                        onCanPlay={() => setVideoReady(true)}
                     />
                 ) : (
                     <img
                         src={mediaSrc}
                         alt={title || "Hero"}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-opacity duration-500"
+                        style={{ opacity: videoReady ? 1 : 0 }}
+                        onLoad={() => setVideoReady(true)}
                     />
                 )}
                 {/* Dark overlay for better text readability */}

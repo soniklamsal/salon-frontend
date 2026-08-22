@@ -5,8 +5,8 @@ import {
 import { ScrollToTop } from "@/features/about/components/scroll-to-top";
 import { BackButton } from "@/components/shared/back-button";
 import { JsonLd } from "@/components/shared/json-ld";
+import { MobileAboutHero } from "@/features/about/components/mobile-about-hero";
 import { ScrollExpansionHero } from "@/components/shared/scroll-expansion-hero";
-import { MobileHero } from "@/components/shared/mobile-hero";
 import { getAboutContent } from "@/lib/api/about";
 import { buildAboutPage } from "@/lib/seo/structured-data";
 import { headers } from "next/headers";
@@ -14,8 +14,8 @@ import { headers } from "next/headers";
 /**
  * About Us.
  *
- * Server-side mobile detection ensures desktop component never loads on mobile.
- * Uses user-agent to determine which hero component to render.
+ * Server-side mobile detection ensures desktop component never renders on mobile.
+ * Mobile gets completely separate hero component with no desktop artifacts.
  */
 
 // Server-side mobile detection
@@ -40,6 +40,22 @@ export default async function AboutPage() {
 
   return (
     <>
+      {/* Critical CSS to prevent desktop flash on mobile - render-blocking by design */}
+      {isMobile && (
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+              /* Force black background immediately on mobile */
+              html, body { background-color: #000 !important; }
+              /* Prevent any desktop component artifacts */
+              .scroll-expansion-hero { display: none !important; }
+              /* Ensure smooth loading */
+              * { -webkit-tap-highlight-color: transparent; }
+            `,
+          }}
+        />
+      )}
+
       <JsonLd
         data={buildAboutPage(
           "About Us",
@@ -48,22 +64,20 @@ export default async function AboutPage() {
       />
       <ScrollToTop />
 
-      <main className="flex-1 min-h-screen bg-background font-gotham">
+      <main className="flex-1 min-h-screen bg-black font-gotham">
         <BackButton />
 
         {isMobile ? (
-          // Mobile: Only render mobile hero - desktop component never loads
-          <MobileHero
-            mediaType="video"
-            mediaSrc={about.heroVideoUrl}
-            posterSrc={about.heroBgImage || undefined}
+          // Mobile: Completely separate component - NO desktop rendering
+          <MobileAboutHero
+            videoUrl={about.heroVideoUrl}
             title={about.heroTitle}
             date={about.heroDate}
           >
             {content}
-          </MobileHero>
+          </MobileAboutHero>
         ) : (
-          // Desktop: Only render desktop hero - mobile component never loads
+          // Desktop: Full GSAP scroll expansion hero
           <ScrollExpansionHero
             mediaType="video"
             mediaSrc={about.heroVideoUrl}
