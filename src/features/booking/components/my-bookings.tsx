@@ -179,140 +179,290 @@ function BookingDialog({
                     </DialogDescription>
                   </div>
 
-                  {/* Download booking slip button */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      // Trigger download
-                      const printWindow = window.open("", "_blank");
-                      if (!printWindow) return;
+                  {/* Download and Print buttons */}
+                  <div className="flex items-center gap-2 shrink-0">
+                    {/* Download button - auto-triggers print dialog for PDF */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const printWindow = window.open("", "_blank");
+                        if (!printWindow) return;
 
-                      printWindow.document.write(`
-                      <!DOCTYPE html>
-                      <html>
-                      <head>
-                        <title>Booking Slip - ${booking.reference}</title>
-                        <style>
-                          * { margin: 0; padding: 0; box-sizing: border-box; }
-                          body { font-family: -apple-system, system-ui, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; }
-                          .header { text-align: center; border-bottom: 3px solid #c7ff3d; padding-bottom: 20px; margin-bottom: 30px; }
-                          .header h1 { font-size: 28px; color: #0a0a0a; margin-bottom: 5px; }
-                          .header p { color: #666; font-size: 14px; }
-                          .status-badge { display: inline-block; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; margin: 20px 0; ${booking.status === 'pending' ? 'background: #fef3c7; color: #92400e; border: 1px solid #fde68a;' :
-                          booking.status === 'approved' ? 'background: #d4ff00; color: #0a0a0a; border: 1px solid #c7ff3d;' :
-                            booking.status === 'completed' ? 'background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd;' :
-                              'background: #fee2e2; color: #991b1b; border: 1px solid #fecaca;'
-                        } }
-                          .code-box { background: #f9fafb; border: 2px dashed #d1d5db; border-radius: 8px; padding: 20px; text-align: center; margin: 20px 0; }
-                          .code-box label { display: block; font-size: 11px; text-transform: uppercase; color: #6b7280; letter-spacing: 1px; margin-bottom: 8px; }
-                          .code-box .code { font-family: 'Courier New', monospace; font-size: 24px; font-weight: 700; color: ${booking.orderId ? '#c7ff3d' : '#0a0a0a'}; letter-spacing: 2px; }
-                          .schedule-box { background: #d4ff00; border-radius: 8px; padding: 15px; text-align: center; margin: 20px 0; }
-                          .schedule-box label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: block; }
-                          .schedule-box .time { font-size: 20px; font-weight: 700; color: #0a0a0a; }
-                          .details { margin: 30px 0; }
-                          .detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e5e7eb; }
-                          .detail-row:last-child { border-bottom: none; }
-                          .detail-row .label { color: #6b7280; font-size: 14px; }
-                          .detail-row .value { font-weight: 600; color: #0a0a0a; text-align: right; }
-                          .footer { margin-top: 40px; padding-top: 20px; border-top: 2px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 12px; }
-                          @media print {
-                            body { padding: 20px; }
-                            button { display: none; }
-                          }
-                          .print-btn { background: #c7ff3d; color: #0a0a0a; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; margin: 20px auto; display: block; }
-                          .print-btn:hover { opacity: 0.9; }
-                        </style>
-                      </head>
-                      <body>
-                        <div class="header">
-                          <h1>SALON BOOKING SLIP</h1>
-                          <p>Your appointment confirmation</p>
-                        </div>
-                        
-                        <div style="text-align: center;">
-                          <span class="status-badge">${booking.statusLabel}</span>
-                        </div>
-                        
-                        <div class="code-box">
-                          <label>${booking.orderId ? 'Order ID — Show this at the salon' : 'Reference Number'}</label>
-                          <div class="code">${booking.orderId ?? booking.reference}</div>
-                          ${!booking.orderId ? '<p style="color: #6b7280; font-size: 12px; margin-top: 10px;">An order ID will be assigned once payment is verified</p>' : ''}
-                        </div>
-                        
-                        ${booking.scheduledDate || booking.scheduledTime ? `
-                          <div class="schedule-box">
-                            <label>Your Appointment Time</label>
-                            <div class="time">${slot(booking.scheduledDate, booking.scheduledTime) || 'To be confirmed'}</div>
+                        printWindow.document.write(`
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                          <title>Booking Slip - ${booking.reference}</title>
+                          <style>
+                            * { margin: 0; padding: 0; box-sizing: border-box; }
+                            body { font-family: -apple-system, system-ui, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; }
+                            .header { text-align: center; border-bottom: 3px solid #c7ff3d; padding-bottom: 20px; margin-bottom: 30px; }
+                            .header h1 { font-size: 28px; color: #0a0a0a; margin-bottom: 5px; }
+                            .header p { color: #666; font-size: 14px; }
+                            .status-badge { display: inline-block; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; margin: 20px 0; ${booking.status === 'pending' ? 'background: #fef3c7; color: #92400e; border: 1px solid #fde68a;' :
+                            booking.status === 'approved' ? 'background: #d4ff00; color: #0a0a0a; border: 1px solid #c7ff3d;' :
+                              booking.status === 'completed' ? 'background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd;' :
+                                'background: #fee2e2; color: #991b1b; border: 1px solid #fecaca;'
+                          } }
+                            .code-box { background: #f9fafb; border: 2px dashed #d1d5db; border-radius: 8px; padding: 20px; text-align: center; margin: 20px 0; }
+                            .code-box label { display: block; font-size: 11px; text-transform: uppercase; color: #6b7280; letter-spacing: 1px; margin-bottom: 8px; }
+                            .code-box .code { font-family: 'Courier New', monospace; font-size: 24px; font-weight: 700; color: ${booking.orderId ? '#000' : '#0a0a0a'}; letter-spacing: 2px; }
+                            .schedule-box { background: #d4ff00; border-radius: 8px; padding: 15px; text-align: center; margin: 20px 0; }
+                            .schedule-box label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: block; color: #0a0a0a; }
+                            .schedule-box .time { font-size: 20px; font-weight: 700; color: #0a0a0a; }
+                            .details { margin: 30px 0; }
+                            .detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e5e7eb; }
+                            .detail-row:last-child { border-bottom: none; }
+                            .detail-row .label { color: #6b7280; font-size: 14px; }
+                            .detail-row .value { font-weight: 600; color: #0a0a0a; text-align: right; word-wrap: break-word; max-width: 400px; }
+                            .footer { margin-top: 40px; padding-top: 20px; border-top: 2px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 12px; }
+                            @media print {
+                              body { padding: 20px; }
+                            }
+                          </style>
+                          <script>
+                            window.onload = function() {
+                              window.print();
+                            };
+                          </script>
+                        </head>
+                        <body>
+                          <div class="header">
+                            <h1>SALON BOOKING SLIP</h1>
+                            <p>Your appointment confirmation</p>
                           </div>
-                        ` : ''}
-                        
-                        <div class="details">
-                          <div class="detail-row">
-                            <span class="label">Service</span>
-                            <span class="value">${booking.service || '—'}</span>
+                          
+                          <div style="text-align: center;">
+                            <span class="status-badge">${booking.statusLabel}</span>
                           </div>
-                          <div class="detail-row">
-                            <span class="label">Barber</span>
-                            <span class="value">${booking.barber || '—'}</span>
+                          
+                          <div class="code-box">
+                            <label>${booking.orderId ? 'Order ID — Show this at the salon' : 'Reference Number'}</label>
+                            <div class="code">${booking.orderId ?? booking.reference}</div>
+                            ${!booking.orderId ? '<p style="color: #6b7280; font-size: 12px; margin-top: 10px;">An order ID will be assigned once payment is verified</p>' : ''}
                           </div>
-                          <div class="detail-row">
-                            <span class="label">Customer Name</span>
-                            <span class="value">${booking.name || '—'}</span>
-                          </div>
-                          <div class="detail-row">
-                            <span class="label">Address</span>
-                            <span class="value">${booking.address || '—'}</span>
-                          </div>
-                          ${booking.notes ? `
-                            <div class="detail-row">
-                              <span class="label">Notes</span>
-                              <span class="value">${booking.notes}</span>
+                          
+                          ${booking.scheduledDate || booking.scheduledTime ? `
+                            <div class="schedule-box">
+                              <label>Your Appointment Time</label>
+                              <div class="time">${slot(booking.scheduledDate, booking.scheduledTime) || 'To be confirmed'}</div>
                             </div>
                           ` : ''}
-                          <div class="detail-row">
-                            <span class="label">Booking Date</span>
-                            <span class="value">${exactly(booking.createdAt) ?? '—'}</span>
-                          </div>
-                          ${booking.approvedAt ? `
+                          
+                          <div class="details">
                             <div class="detail-row">
-                              <span class="label">Approved On</span>
-                              <span class="value">${exactly(booking.approvedAt) ?? '—'}</span>
+                              <span class="label">Service</span>
+                              <span class="value">${booking.service || '—'}</span>
                             </div>
-                          ` : ''}
-                        </div>
-                        
-                        <button class="print-btn" onclick="window.print()">Print This Slip</button>
-                        
-                        <div class="footer">
-                          <p>Thank you for choosing our salon!</p>
-                          <p style="margin-top: 5px;">Please bring this slip or your ${booking.orderId ? 'Order ID' : 'reference number'} when you visit.</p>
-                        </div>
-                      </body>
-                      </html>
-                    `);
-                      printWindow.document.close();
-                      printWindow.focus();
-                    }}
-                    title="Download booking slip"
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="h-5 w-5"
-                      aria-hidden="true"
+                            <div class="detail-row">
+                              <span class="label">Barber</span>
+                              <span class="value">${booking.barber || '—'}</span>
+                            </div>
+                            <div class="detail-row">
+                              <span class="label">Customer Name</span>
+                              <span class="value">${booking.name || '—'}</span>
+                            </div>
+                            <div class="detail-row">
+                              <span class="label">Address</span>
+                              <span class="value">${booking.address || '—'}</span>
+                            </div>
+                            ${booking.notes ? `
+                              <div class="detail-row">
+                                <span class="label">Notes</span>
+                                <span class="value">${booking.notes}</span>
+                              </div>
+                            ` : ''}
+                            <div class="detail-row">
+                              <span class="label">Booking Date</span>
+                              <span class="value">${exactly(booking.createdAt) ?? '—'}</span>
+                            </div>
+                            ${booking.approvedAt ? `
+                              <div class="detail-row">
+                                <span class="label">Approved On</span>
+                                <span class="value">${exactly(booking.approvedAt) ?? '—'}</span>
+                              </div>
+                            ` : ''}
+                          </div>
+                          
+                          <div class="footer">
+                            <p>Thank you for choosing our salon!</p>
+                            ${booking.status === 'pending' ? `
+                              <p style="margin-top: 5px;">Your booking is being reviewed. We will verify your payment and contact you soon.</p>
+                            ` : booking.status === 'approved' ? `
+                              <p style="margin-top: 5px;">Your booking is confirmed! Please bring your Order ID when you visit at the scheduled time.</p>
+                            ` : booking.status === 'completed' ? `
+                              <p style="margin-top: 5px;">This service has been completed. Thank you for visiting our salon!</p>
+                            ` : `
+                              <p style="margin-top: 5px;">Please contact us for any questions about your booking.</p>
+                            `}
+                          </div>
+                        </body>
+                        </html>
+                      `);
+                        printWindow.document.close();
+                      }}
+                      title="Download booking slip"
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                     >
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                      <polyline points="7 10 12 15 17 10" />
-                      <line x1="12" x2="12" y1="15" y2="3" />
-                    </svg>
-                    <span className="sr-only">Download booking slip</span>
-                  </button>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="h-5 w-5"
+                        aria-hidden="true"
+                      >
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" x2="12" y1="15" y2="3" />
+                      </svg>
+                      <span className="sr-only">Download booking slip as PDF</span>
+                    </button>
+
+                    {/* Print button - opens with manual print button */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const printWindow = window.open("", "_blank");
+                        if (!printWindow) return;
+
+                        printWindow.document.write(`
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                          <title>Booking Slip - ${booking.reference}</title>
+                          <style>
+                            * { margin: 0; padding: 0; box-sizing: border-box; }
+                            body { font-family: -apple-system, system-ui, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; }
+                            .header { text-align: center; border-bottom: 3px solid #c7ff3d; padding-bottom: 20px; margin-bottom: 30px; }
+                            .header h1 { font-size: 28px; color: #0a0a0a; margin-bottom: 5px; }
+                            .header p { color: #666; font-size: 14px; }
+                            .status-badge { display: inline-block; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; margin: 20px 0; ${booking.status === 'pending' ? 'background: #fef3c7; color: #92400e; border: 1px solid #fde68a;' :
+                            booking.status === 'approved' ? 'background: #d4ff00; color: #0a0a0a; border: 1px solid #c7ff3d;' :
+                              booking.status === 'completed' ? 'background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd;' :
+                                'background: #fee2e2; color: #991b1b; border: 1px solid #fecaca;'
+                          } }
+                            .code-box { background: #f9fafb; border: 2px dashed #d1d5db; border-radius: 8px; padding: 20px; text-align: center; margin: 20px 0; }
+                            .code-box label { display: block; font-size: 11px; text-transform: uppercase; color: #6b7280; letter-spacing: 1px; margin-bottom: 8px; }
+                            .code-box .code { font-family: 'Courier New', monospace; font-size: 24px; font-weight: 700; color: ${booking.orderId ? '#000' : '#0a0a0a'}; letter-spacing: 2px; }
+                            .schedule-box { background: #d4ff00; border-radius: 8px; padding: 15px; text-align: center; margin: 20px 0; }
+                            .schedule-box label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: block; color: #0a0a0a; }
+                            .schedule-box .time { font-size: 20px; font-weight: 700; color: #0a0a0a; }
+                            .details { margin: 30px 0; }
+                            .detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e5e7eb; }
+                            .detail-row:last-child { border-bottom: none; }
+                            .detail-row .label { color: #6b7280; font-size: 14px; }
+                            .detail-row .value { font-weight: 600; color: #0a0a0a; text-align: right; word-wrap: break-word; max-width: 400px; }
+                            .footer { margin-top: 40px; padding-top: 20px; border-top: 2px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 12px; }
+                            .print-btn { background: #c7ff3d; color: #0a0a0a; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; margin: 20px auto; display: block; font-size: 14px; }
+                            .print-btn:hover { opacity: 0.9; }
+                            @media print {
+                              body { padding: 20px; }
+                              .print-btn { display: none; }
+                            }
+                          </style>
+                        </head>
+                        <body>
+                          <div class="header">
+                            <h1>SALON BOOKING SLIP</h1>
+                            <p>Your appointment confirmation</p>
+                          </div>
+                          
+                          <div style="text-align: center;">
+                            <span class="status-badge">${booking.statusLabel}</span>
+                          </div>
+                          
+                          <div class="code-box">
+                            <label>${booking.orderId ? 'Order ID — Show this at the salon' : 'Reference Number'}</label>
+                            <div class="code">${booking.orderId ?? booking.reference}</div>
+                            ${!booking.orderId ? '<p style="color: #6b7280; font-size: 12px; margin-top: 10px;">An order ID will be assigned once payment is verified</p>' : ''}
+                          </div>
+                          
+                          ${booking.scheduledDate || booking.scheduledTime ? `
+                            <div class="schedule-box">
+                              <label>Your Appointment Time</label>
+                              <div class="time">${slot(booking.scheduledDate, booking.scheduledTime) || 'To be confirmed'}</div>
+                            </div>
+                          ` : ''}
+                          
+                          <div class="details">
+                            <div class="detail-row">
+                              <span class="label">Service</span>
+                              <span class="value">${booking.service || '—'}</span>
+                            </div>
+                            <div class="detail-row">
+                              <span class="label">Barber</span>
+                              <span class="value">${booking.barber || '—'}</span>
+                            </div>
+                            <div class="detail-row">
+                              <span class="label">Customer Name</span>
+                              <span class="value">${booking.name || '—'}</span>
+                            </div>
+                            <div class="detail-row">
+                              <span class="label">Address</span>
+                              <span class="value">${booking.address || '—'}</span>
+                            </div>
+                            ${booking.notes ? `
+                              <div class="detail-row">
+                                <span class="label">Notes</span>
+                                <span class="value">${booking.notes}</span>
+                              </div>
+                            ` : ''}
+                            <div class="detail-row">
+                              <span class="label">Booking Date</span>
+                              <span class="value">${exactly(booking.createdAt) ?? '—'}</span>
+                            </div>
+                            ${booking.approvedAt ? `
+                              <div class="detail-row">
+                                <span class="label">Approved On</span>
+                                <span class="value">${exactly(booking.approvedAt) ?? '—'}</span>
+                              </div>
+                            ` : ''}
+                          </div>
+                          
+                          <button class="print-btn" onclick="window.print()">Print This Slip</button>
+                          
+                          <div class="footer">
+                            <p>Thank you for choosing our salon!</p>
+                            ${booking.status === 'pending' ? `
+                              <p style="margin-top: 5px;">Your booking is being reviewed. We will verify your payment and contact you soon.</p>
+                            ` : booking.status === 'approved' ? `
+                              <p style="margin-top: 5px;">Your booking is confirmed! Please bring your Order ID when you visit at the scheduled time.</p>
+                            ` : booking.status === 'completed' ? `
+                              <p style="margin-top: 5px;">This service has been completed. Thank you for visiting our salon!</p>
+                            ` : `
+                              <p style="margin-top: 5px;">Please contact us for any questions about your booking.</p>
+                            `}
+                          </div>
+                        </body>
+                        </html>
+                      `);
+                        printWindow.document.close();
+                      }}
+                      title="Print booking slip"
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="h-5 w-5"
+                        aria-hidden="true"
+                      >
+                        <polyline points="6 9 6 2 18 2 18 9" />
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                        <rect width="12" height="8" x="6" y="14" />
+                      </svg>
+                      <span className="sr-only">Print booking slip</span>
+                    </button>
+                  </div>
                 </div>
               </DialogHeader>
 
