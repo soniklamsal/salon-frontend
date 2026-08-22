@@ -317,19 +317,19 @@ const ScrollExpansionHero = ({
       ? windowDimensions.width
       : windowDimensions.width
     : 300 +
-      scrollProgress *
-        (isMobileState
-          ? windowDimensions.width - 300
-          : windowDimensions.width - 300);
+    scrollProgress *
+    (isMobileState
+      ? windowDimensions.width - 300
+      : windowDimensions.width - 300);
   const mediaHeight = horizontalExpansionComplete
     ? isMobileState
       ? windowDimensions.height
       : windowDimensions.height
     : 400 +
-      scrollProgress *
-        (isMobileState
-          ? windowDimensions.height - 400
-          : windowDimensions.height - 400);
+    scrollProgress *
+    (isMobileState
+      ? windowDimensions.height - 400
+      : windowDimensions.height - 400);
   const textTranslateX = scrollProgress * (isMobileState ? 180 : 150);
 
   const firstWord = title ? title.split(" ")[0] : "";
@@ -399,11 +399,11 @@ const ScrollExpansionHero = ({
                         src={
                           mediaSrc.includes("embed")
                             ? mediaSrc +
-                              (mediaSrc.includes("?") ? "&" : "?") +
-                              "autoplay=1&mute=1&loop=1&controls=0&showinfo=0&rel=0&disablekb=1&modestbranding=1"
+                            (mediaSrc.includes("?") ? "&" : "?") +
+                            "autoplay=1&mute=1&loop=1&controls=0&showinfo=0&rel=0&disablekb=1&modestbranding=1"
                             : mediaSrc.replace("watch?v=", "embed/") +
-                              "?autoplay=1&mute=1&loop=1&controls=0&showinfo=0&rel=0&disablekb=1&modestbranding=1&playlist=" +
-                              mediaSrc.split("v=")[1]
+                            "?autoplay=1&mute=1&loop=1&controls=0&showinfo=0&rel=0&disablekb=1&modestbranding=1&playlist=" +
+                            mediaSrc.split("v=")[1]
                         }
                         className={`w-full h-full rounded-xl ${horizontalExpansionComplete ? "rounded-none" : "rounded-xl"}`}
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -430,11 +430,21 @@ const ScrollExpansionHero = ({
                         muted
                         loop
                         playsInline
-                        preload="metadata"
+                        preload="auto"
                         className={`w-full h-full object-cover ${horizontalExpansionComplete ? "rounded-none" : "rounded-xl"}`}
                         controls={false}
                         disablePictureInPicture
                         disableRemotePlayback
+                        onLoadedData={(e) => {
+                          // Ensure video plays on mobile
+                          const video = e.currentTarget;
+                          if (video.paused) {
+                            video.play().catch(() => {
+                              // If autoplay fails, try again after user interaction
+                              console.log("Video autoplay prevented");
+                            });
+                          }
+                        }}
                       />
                       <div
                         className="absolute inset-0 z-10"
@@ -519,9 +529,8 @@ const ScrollExpansionHero = ({
               </div>
 
               <div
-                className={`flex items-center justify-center text-center gap-4 w-full relative z-10 transition-none flex-col ${
-                  textBlend ? "mix-blend-difference" : "mix-blend-normal"
-                }`}
+                className={`flex items-center justify-center text-center gap-4 w-full relative z-10 transition-none flex-col ${textBlend ? "mix-blend-difference" : "mix-blend-normal"
+                  }`}
               >
                 <h2
                   className="font-gotham-condensed font-bold uppercase leading-[0.9] tracking-tight text-white transition-none"
