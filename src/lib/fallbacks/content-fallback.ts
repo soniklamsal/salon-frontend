@@ -91,7 +91,7 @@ export const FALLBACK_CONTENT: SiteContent = {
       "witness the transformations that",
       "define our craft.",
     ],
-    cta: { label: "View Gallery", href: "#" },
+    cta: { label: "View Services", href: "/services" },
     images: [
       { id: 1, image: "/images/dribbble/first.jpeg", alt: "Editorial fashion landing page", order: 0 },
       { id: 2, image: "/images/dribbble/second.jpeg", alt: "Studio portfolio layout", order: 1 },
