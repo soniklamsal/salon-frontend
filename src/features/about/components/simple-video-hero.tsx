@@ -11,7 +11,6 @@ interface SimpleVideoHeroProps {
     videoUrl: string;
     title?: string;
     date?: string;
-    scrollPrompt?: string;
     children?: ReactNode;
 }
 
@@ -19,7 +18,6 @@ export function SimpleVideoHero({
     videoUrl,
     title,
     date,
-    scrollPrompt,
     children,
 }: SimpleVideoHeroProps) {
     const [videoLoaded, setVideoLoaded] = useState(false);
@@ -145,39 +143,37 @@ export function SimpleVideoHero({
                             </p>
                         )}
 
-                        {/* Scroll indicator with animated mouse and arrow */}
-                        {scrollPrompt && (
-                            <div className="flex flex-col items-center gap-4 mt-8">
-                                {/* Animated Mouse Icon */}
-                                <div className="relative w-6 h-10 border-2 border-white/80 rounded-full flex items-start justify-center p-1.5">
-                                    {/* Scroll wheel - animated */}
-                                    <div
-                                        className="w-1 h-2 bg-white/80 rounded-full animate-bounce"
-                                        style={{
-                                            animationDuration: "1.5s",
-                                            animationTimingFunction: "ease-in-out",
-                                        }}
-                                    />
-                                </div>
-
-                                {/* Animated Down Arrow Icon */}
-                                <svg
-                                    className="w-6 h-6 text-white/90 animate-bounce"
+                        {/* Scroll indicator with animated mouse and arrow - always visible */}
+                        <div className="flex flex-col items-center gap-4 mt-8">
+                            {/* Animated Mouse Icon */}
+                            <div className="relative w-6 h-10 border-2 border-white/80 rounded-full flex items-start justify-center p-1.5">
+                                {/* Scroll wheel - animated */}
+                                <div
+                                    className="w-1 h-2 bg-white/80 rounded-full animate-bounce"
                                     style={{
-                                        animationDuration: "2s",
+                                        animationDuration: "1.5s",
                                         animationTimingFunction: "ease-in-out",
                                     }}
-                                    fill="none"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-                                </svg>
+                                />
                             </div>
-                        )}
+
+                            {/* Animated Down Arrow Icon */}
+                            <svg
+                                className="w-6 h-6 text-white/90 animate-bounce"
+                                style={{
+                                    animationDuration: "2s",
+                                    animationTimingFunction: "ease-in-out",
+                                }}
+                                fill="none"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                            </svg>
+                        </div>
                     </div>
                 </div>
             </section>
