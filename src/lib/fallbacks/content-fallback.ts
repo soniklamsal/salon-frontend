@@ -21,13 +21,13 @@ const CLOUDINARY = "https://res.cloudinary.com/ufiebboc/image/upload/";
 export const FALLBACK_CONTENT: SiteContent = {
   site: {
     logo: "",
-    brandName: "SALON",
+    brandName: "AJ Salon",
     badgeCaption: "We Don't Keep Our Beauty Secrets",
     metaTitle: "Salon — Always Make Room for a Little Beauty in Your Life",
     metaDescription:
       "Premium hair, beauty and spa treatments in Kathmandu, Nepal. Book an appointment or browse the service menu.",
     navCta: { label: "Book Now", href: "/services" },
-    copyrightText: "2026 Salon All rights reserved",
+    copyrightText: "© 2026 AJ Salon. All rights reserved.",
   },
 
   navLinks: [
