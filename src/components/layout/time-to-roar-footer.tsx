@@ -209,54 +209,53 @@ export function TimeToRoarFooter({
       />
 
       {showHeadline ? (
-      <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-6 px-6 sm:px-10 md:px-16 lg:flex-row lg:gap-16 lg:px-20">
-        <div className="w-full flex-1 lg:w-auto">
-          {/* One <h2>, not three: this is a single phrase that happens to
+        <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-6 px-6 sm:px-10 md:px-16 lg:flex-row lg:gap-16 lg:px-20">
+          <div className="w-full flex-1 lg:w-auto">
+            {/* One <h2>, not three: this is a single phrase that happens to
               animate a line at a time. */}
-          <h2 className="font-display overflow-hidden text-center text-[clamp(60px,12vw,180px)] leading-[0.85] tracking-[-0.03em] uppercase select-none lg:text-left">
-            {lines.map((line, lineIndex) => (
-              <span
-                key={lineIndex}
-                ref={[line1Ref, line2Ref, line3Ref][lineIndex]}
-                className="block w-full"
-                style={{ willChange: "transform" }}
-              >
-                {Array.from(line).map((char, i) => (
-                  <span
-                    key={i}
-                    data-letter
-                    className="inline-block"
-                    // Starts as a ghost; the scrub raises it. The reduced-motion
-                    // path never runs that scrub, so it must not start hidden —
-                    // see the note in the header comment.
-                    style={{ opacity: 0.06, willChange: "opacity" }}
-                  >
-                    {char === " " ? " " : char}
-                  </span>
-                ))}
-              </span>
-            ))}
-          </h2>
-        </div>
+            <h2 className="font-display overflow-hidden text-center text-[clamp(60px,12vw,180px)] leading-[0.85] tracking-[-0.03em] uppercase select-none lg:text-left">
+              {lines.map((line, lineIndex) => (
+                <span
+                  key={lineIndex}
+                  ref={[line1Ref, line2Ref, line3Ref][lineIndex]}
+                  className="block w-full"
+                  style={{ willChange: "transform" }}
+                >
+                  {Array.from(line).map((char, i) => (
+                    <span
+                      key={i}
+                      data-letter
+                      className="inline-block"
+                      // Starts as a ghost; the scrub raises it. The reduced-motion
+                      // path never runs that scrub, so it must not start hidden —
+                      // see the note in the header comment.
+                      style={{ opacity: 0.06, willChange: "opacity" }}
+                    >
+                      {char === " " ? " " : char}
+                    </span>
+                  ))}
+                </span>
+              ))}
+            </h2>
+          </div>
 
-        <div className="flex w-full shrink-0 justify-center sm:w-auto lg:mb-8 lg:justify-end lg:self-end">
-          <Link
-            href={content.cta.href}
-            className="w-full rounded-full bg-accent px-6 py-3 text-center text-base font-bold text-black transition-transform duration-300 hover:scale-105 sm:w-auto sm:px-8 sm:py-4 sm:text-lg"
-          >
-            {content.cta.label}
-          </Link>
+          <div className="flex w-full shrink-0 justify-center sm:w-auto lg:mb-8 lg:justify-end lg:self-end">
+            <Link
+              href={content.cta.href}
+              className="w-full rounded-full bg-accent px-6 py-3 text-center text-base font-bold text-black transition-transform duration-300 hover:scale-105 sm:w-auto sm:px-8 sm:py-4 sm:text-lg"
+            >
+              {content.cta.label}
+            </Link>
+          </div>
         </div>
-      </div>
       ) : null}
 
       {/* `pt-12/md:pt-20` is the gap under the headline. With the headline gone
           the section's own top padding is already the whole space, so it
           collapses to nothing rather than leaving a void. */}
       <div
-        className={`mx-auto flex w-full max-w-7xl flex-col gap-8 px-6 pb-0 sm:gap-10 sm:px-10 md:gap-12 md:px-16 lg:px-20 ${
-          showHeadline ? "pt-12 md:pt-20" : "pt-0"
-        }`}
+        className={`mx-auto flex w-full max-w-7xl flex-col gap-8 px-6 pb-0 sm:gap-10 sm:px-10 md:gap-12 md:px-16 lg:px-20 ${showHeadline ? "pt-12 md:pt-20" : "pt-0"
+          }`}
       >
         <div
           ref={(el) => {
@@ -329,9 +328,22 @@ export function TimeToRoarFooter({
         />
 
         <div className="flex flex-col items-center justify-between gap-4 pt-4 pb-8 sm:flex-row sm:gap-0">
-          <p className="order-2 text-[clamp(16px,3vw,20px)] leading-[clamp(24px,4vw,31px)] text-white/80 sm:order-1">
-            {site.copyrightText}
-          </p>
+          <div className="order-2 flex flex-col items-center gap-2 sm:order-1 sm:items-start">
+            <p className="text-[clamp(16px,3vw,20px)] leading-[clamp(24px,4vw,31px)] text-white/80">
+              {site.copyrightText}
+            </p>
+            <p className="text-[clamp(14px,2.5vw,16px)] leading-[clamp(20px,3.5vw,24px)] text-white/60">
+              Developed by{" "}
+              <a
+                href="https://sonik.com.np/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-accent transition-opacity hover:opacity-70 hover:underline"
+              >
+                Sonik Lamsal
+              </a>
+            </p>
+          </div>
           <button
             type="button"
             onClick={scrollToTop}
