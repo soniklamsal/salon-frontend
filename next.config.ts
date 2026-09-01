@@ -31,6 +31,7 @@ const isLocalApi = ["localhost", "127.0.0.1", "[::1]", "::1"].includes(
 const nextConfig: NextConfig = {
   images: {
     dangerouslyAllowLocalIP: isLocalApi,
+    qualities: [75, 90],
     remotePatterns: [
       { protocol: "https", hostname: "res.cloudinary.com" },
       {

@@ -5,14 +5,14 @@ import {
 import { ScrollToTop } from "@/features/about/components/scroll-to-top";
 import { BackButton } from "@/components/shared/back-button";
 import { JsonLd } from "@/components/shared/json-ld";
-import { SimpleVideoHero } from "@/features/about/components/simple-video-hero";
+import { SimpleImageHero } from "@/features/about/components/simple-image-hero";
 import { getAboutContent } from "@/lib/api/about";
 import { buildAboutPage } from "@/lib/seo/structured-data";
 
 /**
  * About Us.
  *
- * Simple video hero with no GSAP - works consistently across all devices.
+ * Simple image hero - full screen with text overlay.
  */
 
 export default async function AboutPage() {
@@ -38,15 +38,14 @@ export default async function AboutPage() {
       <main className="flex-1 min-h-screen bg-background font-gotham">
         <BackButton />
 
-        {/* Simple video hero - no GSAP, works on all devices */}
-        <SimpleVideoHero
-          videoUrl={about.heroVideoUrl}
+        {/* Simple image hero */}
+        <SimpleImageHero
+          imageUrl={about.heroImage}
           title={about.heroTitle}
           date={about.heroDate}
-          scrollPrompt={about.heroScrollPrompt}
         >
           {content}
-        </SimpleVideoHero>
+        </SimpleImageHero>
       </main>
     </>
   );

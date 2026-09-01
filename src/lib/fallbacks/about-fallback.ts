@@ -32,9 +32,7 @@ export const FALLBACK_ABOUT: AboutContent = {
   heroTitle: "AJ Salon Experience",
   heroDate: "In Kathmandu since 2018",
   heroScrollPrompt: "Scroll to Explore Our Salon",
-  heroVideoUrl:
-    "https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.mp4",
-  heroBgImage:
+  heroImage:
     "https://res.cloudinary.com/dr54mqokd/image/upload/v1787363940/media/about/pexels-artbovich-7750137_wdiaq5.jpg",
   eyebrow: "About Our Salon",
   headingLine1: "More Than",

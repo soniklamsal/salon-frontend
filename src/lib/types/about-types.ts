@@ -55,8 +55,7 @@ export type AboutContent = {
   heroTitle: string;
   heroDate: string;
   heroScrollPrompt: string;
-  heroVideoUrl: string;
-  heroBgImage: string;
+  heroImage: string;
   eyebrow: string;
   headingLine1: string;
   /** Rendered in the accent colour under line 1. */
