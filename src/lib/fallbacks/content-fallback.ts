@@ -23,7 +23,7 @@ export const FALLBACK_CONTENT: SiteContent = {
     logo: "",
     brandName: "AJ Salon",
     badgeCaption: "We Don't Keep Our Beauty Secrets",
-    metaTitle: "Salon — Always Make Room for a Little Beauty in Your Life",
+    metaTitle: "AJ Salon — Always Make Room for a Little Beauty in Your Life",
     metaDescription:
       "Premium hair, beauty and spa treatments in Kathmandu, Nepal. Book an appointment or browse the service menu.",
     navCta: { label: "Book Now", href: "/services" },
