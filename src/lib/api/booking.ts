@@ -5,7 +5,6 @@ import type {
   Service,
   TimeSlot,
 } from "@/lib/types/content-types";
-import { FALLBACK_BOOKING_CONFIG } from "@/lib/fallbacks/booking-fallback";
 
 /**
  * Server-side reader for the booking form's options.
@@ -22,9 +21,7 @@ import { FALLBACK_BOOKING_CONFIG } from "@/lib/fallbacks/booking-fallback";
  */
 
 const API_BASE = (
-  process.env.NEXT_PUBLIC_SALON_API_URL ?? 
-  process.env.SALON_API_URL ?? 
-  "http://localhost:8000/api/v1"
+  process.env.NEXT_PUBLIC_SALON_API_URL ?? "http://localhost:8000/api/v1"
 ).replace(/\/$/, "");
 
 const REVALIDATE_SECONDS = Number(process.env.SALON_API_REVALIDATE ?? 60);
@@ -142,9 +139,16 @@ export async function getBookingConfig(): Promise<BookingConfig> {
     console.warn(
       `[booking] ${API_BASE}/booking-config/ unavailable (${
         error instanceof Error ? error.message : String(error)
-      }) — using fallback booking configuration.`
+      }) — the form will render its unavailable state.`
     );
-    return FALLBACK_BOOKING_CONFIG;
+    // Empty, never invented. A bundled list of services and barbers was tried
+    // here and is exactly what must not happen: the prices in it were not the
+    // salon's, the stylists were not on shift, and the eSewa QR was blank — so
+    // a customer could be quoted 800 for a cut that costs something else and
+    // sent to pay a deposit with nothing to pay it to. Wording still comes
+    // from DEFAULT_BOOKING_COPY, because the unavailable state has to say
+    // something; only the bookable data is withheld.
+    return EMPTY_BOOKING_CONFIG;
   }
 }
 

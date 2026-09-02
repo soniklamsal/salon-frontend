@@ -16,7 +16,7 @@ import type { SiteContent } from "@/lib/types/content-types";
  */
 
 const API_BASE = (
-  process.env.SALON_API_URL ?? "http://127.0.0.1:8001/api/v1"
+  process.env.NEXT_PUBLIC_SALON_API_URL ?? "http://localhost:8000/api/v1"
 ).replace(/\/$/, "");
 
 // Seconds. The page is prerendered and refreshed on this interval, so an admin

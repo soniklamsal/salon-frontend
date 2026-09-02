@@ -1,14 +1,6 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npm run build",
   "framework": "nextjs",
-  "regions": ["iad1"],
-  "env": {
-    "SALON_API_URL": "http://127.0.0.1:8001/api/v1",
-    "SALON_API_REVALIDATE": "60",
-    "SALON_API_TIMEOUT_MS": "4000",
-    "NEXT_PUBLIC_CLERK_SIGN_IN_URL": "/sign-in",
-    "NEXT_PUBLIC_CLERK_SIGN_UP_URL": "/sign-up",
-    "NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL": "/services",
-    "NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL": "/services"
-  }
+  "regions": ["iad1"]
 }

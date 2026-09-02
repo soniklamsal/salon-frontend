@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "@clerk/ui/themes/shadcn.css";
 
 @layer base {
   /*
@@ -689,57 +688,18 @@ body {
 }
 
 /* -----------------------------------------------------------------
-   Bare shadcn variables, for consumers outside Tailwind.
+   What is NOT in this :root block any more.
 
-   The @theme block above declares `--color-card`, `--color-primary`
-   and so on, which is what Tailwind v4 needs to emit `bg-card` /
-   `text-primary` utilities. It does NOT declare `--card` or
-   `--primary`.
-
-   Clerk's shadcn theme (@clerk/ui/themes/shadcn) reads the bare
-   names — `var(--card)`, `var(--primary)`, `var(--ring)` and the
-   rest. With them undefined every colour fell back to Clerk's own
-   default, which rendered near-black text on the near-black page:
-   the sign-in form was there but unreadable.
-
-   Declared here rather than by rewriting the @theme block above, so
-   the two systems stay independent: the Tailwind utilities keep the
-   values they already had, and these exist purely for anything that
-   reads plain CSS custom properties.
-
-   `--muted` is deliberately a dark SURFACE here, while the Tailwind
-   `--color-muted` above is a light TEXT grey. Clerk uses this one as
-   a panel background; nothing reads both.
+   It used to carry a second, bare-named copy of the
+   shadcn palette (`--card`, `--primary`, `--ring` and the rest).
+   That existed for one consumer: Clerk's shadcn theme, which read
+   the bare names rather than the `--color-*` ones Tailwind v4 emits.
+   Google sign-in renders no third-party widget, so nothing reads
+   them any more and they are gone — the @theme block above remains
+   the single source for every colour on the site.
    ----------------------------------------------------------------- */
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #ffffff;
-
-  --card: #121212;
-  --card-foreground: #ffffff;
-
-  --popover: #141414;
-  --popover-foreground: #ffffff;
-
-  --primary: #c7ff3d;
-  --primary-foreground: #0a0a0a;
-
-  --secondary: #1c1c1c;
-  --secondary-foreground: #ffffff;
-
-  --muted: #1e1e1e;
-  --muted-foreground: #a6a6a6;
-
-  --accent: #c7ff3d;
-  --accent-foreground: #0a0a0a;
-
-  --destructive: #f87171;
-
-  --border: rgba(255, 255, 255, 0.16);
-  --input: rgba(255, 255, 255, 0.22);
-  --ring: #c7ff3d;
-
   /*
    * Header geometry.
    *

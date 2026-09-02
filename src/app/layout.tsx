@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
 import { Jost, Kiwi_Maru, Poppins } from "next/font/google";
 import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
-import { shadcn } from "@clerk/ui/themes";
-
 import { KineticNav } from "@/components/layout/kinetic-nav";
 import { SmoothScrollProvider } from "@/providers/smooth-scroll-provider";
 import { TimeToRoarFooter } from "@/components/layout/time-to-roar-footer";
-import { CLERK_ENABLED } from "@/lib/auth";
+import { AuthProvider } from "@/features/auth/components/auth-provider";
+import { isAuthConfigured } from "@/lib/auth";
 import { getSiteContent } from "@/lib/api/content";
 import { absoluteUrl, SITE_URL, warnIfUnconfigured } from "@/lib/seo/site";
 
@@ -95,12 +93,12 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const { site, navLinks, socialLinks, footer } = await getSiteContent();
 
   /*
-    ClerkProvider reads the publishable key as it renders and throws without
-    one, which would take down every page rather than just the booking gate.
-    Wrapping conditionally keeps the site serving until the keys are added —
-    see lib/auth.ts.
+    Evaluated here, on the server, because the variables it reads are secrets
+    and must not reach the browser. The boolean does — see auth-provider.tsx.
   */
-  const tree = (
+  const authConfigured = isAuthConfigured();
+
+  return (
     <html
       lang="en"
       className={`${jost.variable} ${kiwiMaru.variable} ${poppins.variable} h-full antialiased`}
@@ -118,36 +116,36 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         content, so it must not be inside anything Lenis transforms.
       */}
       <body suppressHydrationWarning className="flex min-h-full flex-col">
-        <KineticNav
-          links={navLinks}
-          cta={site.navCta}
-          logo={site.logo}
-          brandName={site.brandName}
-          social={socialLinks}
-        />
-        <SmoothScrollProvider>{children}</SmoothScrollProvider>
         {/*
-          One footer for the whole site, mounted here rather than per page so
-          every route — including any added later — ends the same way. It sits
-          outside SmoothScrollProvider only because that provider renders a bare
-          fragment; there is no wrapper to be inside or outside of.
-
-          Each page therefore renders <main> and nothing after it.
+          Wraps the whole body rather than the html element: SessionProvider
+          renders a context provider and nothing else, but keeping it inside
+          <body> avoids putting a client component between <html> and <body>,
+          which Next warns about.
         */}
-        <TimeToRoarFooter
-          content={footer}
-          social={socialLinks}
-          site={site}
-        />
+        <AuthProvider configured={authConfigured}>
+          <KineticNav
+            links={navLinks}
+            cta={site.navCta}
+            logo={site.logo}
+            brandName={site.brandName}
+            social={socialLinks}
+          />
+          <SmoothScrollProvider>{children}</SmoothScrollProvider>
+          {/*
+            One footer for the whole site, mounted here rather than per page so
+            every route — including any added later — ends the same way. It
+            sits outside SmoothScrollProvider only because that provider
+            renders a bare fragment; there is no wrapper to be in or out of.
+
+            Each page therefore renders <main> and nothing after it.
+          */}
+          <TimeToRoarFooter
+            content={footer}
+            social={socialLinks}
+            site={site}
+          />
+        </AuthProvider>
       </body>
     </html>
-  );
-
-  // `shadcn` theme so Clerk's widgets inherit the same tokens as
-  // components/ui — see the shadcn block at the end of globals.css.
-  return CLERK_ENABLED ? (
-    <ClerkProvider appearance={{ theme: shadcn }}>{tree}</ClerkProvider>
-  ) : (
-    tree
   );
 }

@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/auth";
 
 import { BackButton } from "@/components/shared/back-button";
 import { Card, CardContent } from "@/components/ui/card";
 import { BookingFlow } from "@/features/booking/components/booking-flow";
-import { CLERK_ENABLED, SIGN_IN_PATH } from "@/lib/auth";
+import { isAuthConfigured, SIGN_IN_PATH } from "@/lib/auth";
 import { BOOKING_ENDPOINT, getBookingConfig } from "@/lib/api/booking";
 import { NOINDEX } from "@/lib/seo/site";
 
@@ -17,10 +17,9 @@ import { NOINDEX } from "@/lib/seo/site";
  * are fetched once on the server; `BookingFlow` is the client island that walks
  * through the four steps and posts the result.
  *
- * `BOOKING_ENDPOINT` is handed down as a prop rather than read in the client:
- * `SALON_API_URL` is a server-only variable (no `NEXT_PUBLIC_` prefix), so the
- * browser cannot see it. Passing the resolved string keeps the URL in one place
- * and out of the client bundle's environment.
+ * `BOOKING_ENDPOINT` is handed down as a prop rather than rebuilt in the
+ * client. `NEXT_PUBLIC_SALON_API_URL` does reach the browser, but resolving the
+ * URL once on the server keeps every caller pointed at the same string.
  */
 
 export const metadata: Metadata = {
@@ -34,18 +33,18 @@ export const metadata: Metadata = {
 
 export default async function ServicesPage() {
   /*
-    The gate. Checked here rather than in middleware because Clerk 7 deprecates
-    route-matcher middleware, warning that path matching "can diverge from how
-    Next.js routes requests and leave protected resources reachable". This runs
-    on the resource itself, so there is no path to route around.
+    The gate. The proxy redirects here too, but this is the authoritative
+    check: path matching in a proxy can diverge from how Next actually routes
+    a request, and this one runs on the resource itself, so there is no path
+    to route around it.
 
-    Skipped entirely when Clerk is not configured, which is what lets the site
-    keep working before the keys are added.
+    Skipped entirely when sign-in is not configured, which is what lets the
+    site keep working before the credentials are added.
   */
-  if (CLERK_ENABLED) {
-    const { userId } = await auth();
-    if (!userId) {
-      redirect(`${SIGN_IN_PATH}?redirect_url=/services`);
+  if (isAuthConfigured()) {
+    const session = await auth();
+    if (!session?.user) {
+      redirect(`${SIGN_IN_PATH}?callbackUrl=/services`);
     }
   }
 

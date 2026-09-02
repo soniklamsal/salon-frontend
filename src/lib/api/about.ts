@@ -10,7 +10,7 @@ import { FALLBACK_ABOUT } from "@/lib/fallbacks/about-fallback";
 import type { AboutContent } from "@/lib/types/about-types";
 
 const API_BASE = (
-  process.env.SALON_API_URL ?? "http://127.0.0.1:8001/api/v1"
+  process.env.NEXT_PUBLIC_SALON_API_URL ?? "http://localhost:8000/api/v1"
 ).replace(/\/$/, "");
 
 const REVALIDATE_SECONDS = Number(process.env.SALON_API_REVALIDATE ?? 60);
@@ -21,11 +21,31 @@ function pick<T>(value: T | undefined | null, fallback: T): T {
   return value === undefined || value === null ? fallback : value;
 }
 
+/**
+ * Like `pick`, but an empty string also counts as "not set".
+ *
+ * Only for image URLs, and deliberately not for text. Django serialises an
+ * ImageField with nothing uploaded as `""`, not as a missing key, so the
+ * spread below would otherwise overwrite the bundled hero with an empty
+ * string -- and `<Image src="">` makes the browser re-request the page as if
+ * it were the image.
+ *
+ * Text is left alone on purpose: a blank heading or date is a real editorial
+ * choice someone made in the admin, and quietly restoring the shipped copy
+ * over it would make the field impossible to clear.
+ */
+function pickImage(value: string | undefined | null, fallback: string): string {
+  return value ? value : fallback;
+}
+
 function withFallbacks(payload: Partial<AboutContent>): AboutContent {
   const f = FALLBACK_ABOUT;
   return {
     ...f,
     ...payload,
+    // The hero photograph is optional in the admin, so "no image chosen"
+    // arrives as "" and has to be caught after the spread above.
+    heroImage: pickImage(payload.heroImage, f.heroImage),
     // Arrays are taken whole, but only when the key was actually sent: a
     // backend that has not been migrated yet would otherwise blank the page.
     columns: pick(payload.columns, f.columns),

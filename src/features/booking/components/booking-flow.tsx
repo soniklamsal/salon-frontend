@@ -3,14 +3,15 @@
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
-import { useAuth, useUser } from "@clerk/nextjs";
+import { useSession } from "next-auth/react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { readApiError } from "@/lib/api/api-error";
-import { CLERK_ENABLED } from "@/lib/auth";
+import { useAuthConfigured } from "@/features/auth/components/auth-provider";
+import { authHeader } from "@/lib/api/session-token";
 import { barberStepProblem, depositFor, isBookable } from "@/lib/api/booking";
 import { cn } from "@/lib/utils";
 import { useBookingStore } from "@/stores/booking-store";
@@ -108,34 +109,36 @@ function ChoiceCard({
   );
 }
 
-/** What the form needs from Clerk; null when accounts are switched off. */
+/** What the form needs from the session; null when accounts are off. */
 type AuthBits = {
-  getToken: () => Promise<string | null>;
   fullName: string;
   /** The address they signed up with. Shown, never edited, never posted. */
   email: string;
 } | null;
 
 /**
- * Clerk's hooks throw outside <ClerkProvider>, so they cannot sit in a
- * component that also has to render without one. This wrapper is mounted only
- * when Clerk is enabled and hands the results down as plain props.
+ * Reads the session and hands the form plain values.
+ *
+ * Kept as its own component even though `useSession()` — unlike Clerk's hooks —
+ * degrades happily outside a provider, because the split is what stops the
+ * form below from importing anything auth-shaped. It takes strings.
+ *
+ * The token is no longer passed down: the form asks for one at submit time
+ * through `authHeader()`, which caches it. Threading a `getToken` callback
+ * through props only ever existed because Clerk's was tied to its hook.
  */
 function BookingFlowWithAuth(props: {
   config: BookingConfig;
   endpoint: string;
 }) {
-  const { getToken } = useAuth();
-  const { user, isLoaded } = useUser();
+  const { data: session, status } = useSession();
+  const ready = status !== "loading";
   return (
     <BookingForm
       {...props}
       auth={{
-        getToken: () => getToken(),
-        fullName: isLoaded ? (user?.fullName ?? "") : "",
-        email: isLoaded
-          ? (user?.primaryEmailAddress?.emailAddress ?? "")
-          : "",
+        fullName: ready ? (session?.user?.name ?? "") : "",
+        email: ready ? (session?.user?.email ?? "") : "",
       }}
     />
   );
@@ -145,7 +148,8 @@ export function BookingFlow(props: {
   config: BookingConfig;
   endpoint: string;
 }) {
-  return CLERK_ENABLED ? (
+  const configured = useAuthConfigured();
+  return configured ? (
     <BookingFlowWithAuth {...props} />
   ) : (
     <BookingForm {...props} auth={null} />
@@ -302,8 +306,8 @@ function BookingForm({
     body.append("address", address.trim());
     body.append("phone", phone.trim());
     body.append("notes", description.trim());
-    // No email. It comes from the verified Clerk token server-side, which is
-    // the only source that cannot be edited by whoever is posting.
+    // No email. It comes from the verified session token server-side, which
+    // is the only source that cannot be edited by whoever is posting.
     if (service) body.append("service", String(service.id));
     if (barber) body.append("barber", String(barber.id));
     if (timeSlot) body.append("time_slot", String(timeSlot.id));
@@ -314,13 +318,12 @@ function BookingForm({
         Sent as a bearer token rather than a cookie: the API is on a different
         origin (Django on 8001), so a session cookie would not be attached.
         A missing token is not an error — the booking is simply recorded
-        without an account, which is what happens before Clerk is configured.
+        without an account, which is what happens before sign-in is configured.
+
+        `authHeader()` returns {} when signed out and never throws, so there is
+        no branch here and no way for an auth hiccup to fail a real booking.
       */
-      const headers: HeadersInit = {};
-      if (auth) {
-        const token = await auth.getToken().catch(() => null);
-        if (token) headers.Authorization = `Bearer ${token}`;
-      }
+      const headers: HeadersInit = auth ? await authHeader() : {};
 
       const response = await fetch(endpoint, {
         method: "POST",

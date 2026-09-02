@@ -42,7 +42,7 @@ Once your backend is ready, add these environment variables in Vercel:
 
 ```env
 # Backend API
-SALON_API_URL=https://ajunisexsalon.com/api/v1
+NEXT_PUBLIC_SALON_API_URL=https://ajunisexsalon.com/api/v1
 SALON_API_REVALIDATE=60
 SALON_API_TIMEOUT_MS=4000
 
@@ -97,7 +97,7 @@ The application has a comprehensive fallback system:
 2. Ensure `src/lib/api/content.ts` has proper error handling
 3. Try adding this to Vercel environment variables:
    ```
-   SALON_API_URL=http://localhost:8001/api/v1
+   NEXT_PUBLIC_SALON_API_URL=http://localhost:8000/api/v1
    ```
 
 ### Build Fails with "CLERK_PUBLISHABLE_KEY is not defined"
@@ -115,7 +115,7 @@ The application has a comprehensive fallback system:
 
 **Solution**: 
 1. **For fallback content**: Images are SVGs in `/public/images/` - these always work
-2. **For backend images**: Add `SALON_API_URL` environment variable
+2. **For backend images**: Add `NEXT_PUBLIC_SALON_API_URL` environment variable
 3. **For Cloudinary**: Images from Cloudinary should work automatically
 
 ### "SALON_SITE_URL is not configured" Warning
@@ -157,7 +157,7 @@ This affects:
 ### Phase 3: Backend Integration
 
 - [ ] Backend deployed and accessible
-- [ ] Add `SALON_API_URL` environment variable
+- [ ] Add `NEXT_PUBLIC_SALON_API_URL` environment variable
 - [ ] Test API endpoint manually: `curl https://ajunisexsalon.com/api/v1/homepage/`
 - [ ] Redeploy frontend
 - [ ] Verify CMS content loads instead of fallback
@@ -179,7 +179,7 @@ This affects:
 
 | Variable | Required | Default | Purpose |
 |----------|----------|---------|---------|
-| `SALON_API_URL` | No | `http://127.0.0.1:8001/api/v1` | Backend API endpoint |
+| `NEXT_PUBLIC_SALON_API_URL` | No | `http://localhost:8000/api/v1` | Backend API endpoint |
 | `SALON_API_REVALIDATE` | No | `60` | Content cache time (seconds) |
 | `SALON_API_TIMEOUT_MS` | No | `4000` | API request timeout |
 | `SALON_SITE_URL` | No | `http://localhost:3000` | Your production domain |

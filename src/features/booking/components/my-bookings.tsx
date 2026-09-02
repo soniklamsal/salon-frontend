@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { useAuth } from "@clerk/nextjs";
+import { useSession } from "next-auth/react";
 
 import {
   Table,
@@ -22,7 +22,8 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollHint } from "@/components/shared/scroll-hint";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CLERK_ENABLED } from "@/lib/auth";
+import { useAuthConfigured } from "@/features/auth/components/auth-provider";
+import { getApiToken } from "@/lib/api/session-token";
 import { cn } from "@/lib/utils";
 
 /**
@@ -32,9 +33,9 @@ import { cn } from "@/lib/utils";
  * person: rendering it server-side would make the home page uncacheable for
  * everyone, to show a band most visitors never see.
  *
- * The request carries the Clerk session token and the API filters on the `sub`
- * claim it verifies, so this component never sends an id and never chooses
- * whose bookings to ask for.
+ * The request carries a short-lived token minted from the Google session, and
+ * the API filters on the `sub` claim it verifies — so this component never
+ * sends an id and never chooses whose bookings to ask for.
  *
  * Lives on /status rather than the home page. It used to be a band there, but
  * a private list made the home page's content depend on who was reading it,
@@ -705,7 +706,7 @@ type LoadState =
   | { status: "error" };
 
 function BookingsList({ endpoint }: { endpoint: string }) {
-  const { getToken, isLoaded } = useAuth();
+  const { status: sessionStatus } = useSession();
   const [state, setState] = useState<LoadState>({ status: "loading" });
   const [open, setOpen] = useState<Booking | null>(null);
 
@@ -716,7 +717,10 @@ function BookingsList({ endpoint }: { endpoint: string }) {
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
-    if (!isLoaded) return;
+    // Wait for the session to resolve. Fetching while it is still "loading"
+    // would ask for a token that does not exist yet and render "no bookings"
+    // at somebody who has them.
+    if (sessionStatus === "loading") return;
 
     // Set when the effect is torn down — an unmount, or a retry superseding
     // this run. Without it a slow response could resolve after the component
@@ -725,10 +729,10 @@ function BookingsList({ endpoint }: { endpoint: string }) {
     let cancelled = false;
 
     void (async () => {
-      // `getToken()` resolves to null when there is no session, so it answers
-      // the signed-out case too. Either way it is "no bookings to show", not a
-      // failure worth reporting.
-      const token = await getToken().catch(() => null);
+      // `getApiToken()` resolves to null when there is no session, so it
+      // answers the signed-out case too. Either way it is "no bookings to
+      // show", not a failure worth reporting.
+      const token = await getApiToken();
       if (cancelled) return;
 
       if (!token) {
@@ -737,7 +741,9 @@ function BookingsList({ endpoint }: { endpoint: string }) {
       }
 
       try {
-        // Add cache-busting timestamp to force fresh data
+        // Cache-busted as well as `no-store`: a booking approved a minute ago
+        // has to show up on a reload, and this list is small enough that
+        // always refetching costs nothing.
         const cacheBuster = `?_t=${Date.now()}`;
         const response = await fetch(endpoint + cacheBuster, {
           headers: { Authorization: `Bearer ${token}` },
@@ -745,11 +751,6 @@ function BookingsList({ endpoint }: { endpoint: string }) {
         });
         if (!response.ok) throw new Error(String(response.status));
         const payload = await response.json();
-
-        // Debug log to help verify selected time slots are being received
-        if (payload.bookings && payload.bookings.length > 0) {
-          console.log('[My Bookings] First booking selectedTimeSlot:', payload.bookings[0].selectedTimeSlot);
-        }
 
         if (cancelled) return;
         setState({ status: "ready", bookings: payload.bookings ?? [] });
@@ -762,7 +763,7 @@ function BookingsList({ endpoint }: { endpoint: string }) {
     return () => {
       cancelled = true;
     };
-  }, [isLoaded, getToken, endpoint, attempt]);
+  }, [sessionStatus, endpoint, attempt]);
 
   // Still loading. A skeleton rather than nothing: the fetch happens in the
   // browser after the page has painted, so an empty space would read as "you
@@ -882,8 +883,9 @@ function BookingsList({ endpoint }: { endpoint: string }) {
 }
 
 export function MyBookings({ endpoint }: { endpoint: string }) {
-  // Clerk's hooks throw outside <ClerkProvider>, so the inner component only
-  // mounts when accounts are switched on — same split as the booking form.
-  if (!CLERK_ENABLED) return null;
+  // Nothing to show when accounts are switched off: with no way to sign in
+  // there is no "your" list — same split as the booking form.
+  const configured = useAuthConfigured();
+  if (!configured) return null;
   return <BookingsList endpoint={endpoint} />;
 }

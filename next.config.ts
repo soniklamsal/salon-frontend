@@ -1,16 +1,17 @@
 import type { NextConfig } from "next";
 
 /**
- * Images now come from three places, so all three have to be allowed:
+ * Images now come from four places, so all four have to be allowed:
  *   - `public/` (the seeded defaults) — no config needed;
  *   - Cloudinary, still hosting the Classes cards ported from devis-gym;
- *   - the Django backend's own `/media/`, for anything uploaded in the admin.
+ *   - the Django backend's own `/media/`, for anything uploaded in the admin;
+ *   - Google, for the avatar of a signed-in customer.
  *
- * The last one is derived from SALON_API_URL rather than hardcoded, so pointing
+ * The last one is derived from NEXT_PUBLIC_SALON_API_URL rather than hardcoded, so pointing
  * the app at a deployed backend does not also require editing this file.
  */
 const apiUrl = new URL(
-  process.env.SALON_API_URL ?? "http://127.0.0.1:8001/api/v1"
+  process.env.NEXT_PUBLIC_SALON_API_URL ?? "http://localhost:8000/api/v1"
 );
 
 /**
@@ -20,7 +21,7 @@ const apiUrl = new URL(
  * on 127.0.0.1, so every admin-uploaded image (barber photos, the eSewa QR)
  * fails with "url parameter is not allowed" until the guard is waived.
  *
- * Waived only when the configured backend is itself local. Point SALON_API_URL
+ * Waived only when the configured backend is itself local. Point NEXT_PUBLIC_SALON_API_URL
  * at a deployed backend and the guard comes straight back on, which is where
  * it matters.
  */
@@ -34,6 +35,14 @@ const nextConfig: NextConfig = {
     qualities: [75, 90],
     remotePatterns: [
       { protocol: "https", hostname: "res.cloudinary.com" },
+      {
+        // Google account avatars, shown in the header once signed in. Google
+        // serves them from a numbered subdomain (lh3, lh4, ...), so the
+        // wildcard is the host pattern rather than a guess at one of them.
+        protocol: "https",
+        hostname: "*.googleusercontent.com",
+        pathname: "/**",
+      },
       {
         protocol: apiUrl.protocol === "https:" ? "https" : "http",
         hostname: apiUrl.hostname,

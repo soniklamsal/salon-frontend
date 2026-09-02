@@ -1,22 +1,20 @@
-import { NextResponse, type NextFetchEvent, type NextRequest } from "next/server";
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { NextResponse, type NextRequest } from "next/server";
 
-import { CLERK_ENABLED, PROTECTED_PATHS, SIGN_IN_PATH } from "@/lib/auth";
+import { auth } from "@/auth";
+import { PROTECTED_PATHS, SIGN_IN_PATH } from "@/lib/auth";
 
 /**
- * Supplies the Clerk session, and bounces signed-out visitors off the private
- * routes before those routes start rendering.
+ * Bounces signed-out visitors off the private routes before those routes start
+ * rendering.
  *
  * Named `proxy.ts` rather than `middleware.ts`: Next 16 deprecated the
  * `middleware` file convention and renamed it to `proxy` — the build warns on
- * the old name. Same execution model, same `config.matcher`; the exported
- * function is `proxy` and takes (NextRequest, NextFetchEvent).
+ * the old name. Same execution model, same `config.matcher`.
  *
  * The authoritative check is still in the page — `app/services/page.tsx` and
- * `app/status/page.tsx` both call `auth()` and redirect — because Clerk 7 warns
- * that middleware path matching "can diverge from how Next.js routes requests
- * and leave protected resources reachable". That check is what actually
- * protects the data, and it stays.
+ * `app/status/page.tsx` both call `auth()` and redirect. Path matching in a
+ * proxy can diverge from how Next actually routes a request, so the check that
+ * protects the data runs on the resource itself, and it stays.
  *
  * This exists for the status code. Once a route has a `loading.tsx`, Next
  * streams it: the response is committed as 200 with the skeleton before the
@@ -26,8 +24,11 @@ import { CLERK_ENABLED, PROTECTED_PATHS, SIGN_IN_PATH } from "@/lib/auth";
  * visitor watches a skeleton they were never going to be shown. Redirecting
  * here happens before any of that.
  *
- * Deliberately a plain pathname test rather than `createRouteMatcher`, which
- * Clerk 7 deprecates.
+ * `auth()` used as a wrapper supplies the session; unlike the Clerk middleware
+ * this replaces, it does not throw when the app is unconfigured — it simply
+ * reports nobody signed in. So there is no "is auth switched on" guard here
+ * any more. An unconfigured deployment would redirect to /sign-in, which is
+ * the page that explains the situation.
  */
 function isProtected(pathname: string) {
   return PROTECTED_PATHS.some(
@@ -35,31 +36,27 @@ function isProtected(pathname: string) {
   );
 }
 
-const withClerk = clerkMiddleware(async (auth, request) => {
+export const proxy = auth((request) => {
   if (!isProtected(request.nextUrl.pathname)) return;
+  if (request.auth?.user) return;
 
-  const { userId } = await auth();
-  if (userId) return;
-
-  const signIn = new URL(SIGN_IN_PATH, request.url);
-  signIn.searchParams.set("redirect_url", request.nextUrl.pathname);
+  const signIn = new URL(SIGN_IN_PATH, request.nextUrl.origin);
+  // Auth.js reads `callbackUrl` after a successful sign-in, so the visitor
+  // lands back on the page they were stopped at rather than the home page.
+  signIn.searchParams.set("callbackUrl", request.nextUrl.pathname);
   return NextResponse.redirect(signIn);
-});
-
-export function proxy(request: NextRequest, event: NextFetchEvent) {
-  // `clerkMiddleware()` reads the publishable key when it runs, so in a
-  // checkout with no keys it would turn every request into an error page —
-  // including pages that have nothing to do with auth.
-  if (!CLERK_ENABLED) return NextResponse.next();
-  return withClerk(request, event);
-}
+}) as unknown as (request: NextRequest) => Promise<Response | undefined>;
 
 export const config = {
   matcher: [
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    "/(api|trpc)(.*)",
-    // Clerk's auto-proxy path. Must be matched or the handshake that
-    // establishes the session never reaches the proxy.
-    "/__clerk/:path*",
+    /*
+      Everything except Next's own assets and static files — and, unlike the
+      Clerk version, except `/api/auth` as well. Auth.js's own endpoints must
+      not be wrapped by a proxy that consults Auth.js: the callback Google
+      redirects to is what *creates* the session, so running the guard over it
+      is at best wasted work and at worst a redirect loop on the one URL that
+      has to be reachable while signed out.
+    */
+    "/((?!api/auth|_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
   ],
 };

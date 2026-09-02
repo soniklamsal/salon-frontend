@@ -30,15 +30,31 @@ export function SimpleImageHero({
             <section className="relative w-full h-screen overflow-hidden bg-background">
                 {/* Image Background */}
                 <div className="absolute inset-0">
-                    <Image
-                        src={imageUrl}
-                        alt="About Us Hero"
-                        fill
-                        className="object-cover"
-                        priority
-                        quality={90}
-                    />
-                    {/* Dark overlay for better text readability */}
+                    {/*
+                        Guarded, the same way the homepage hero guards
+                        `content.stylistImage`. The admin's About hero is an
+                        optional upload, so the API sends "" when nothing has
+                        been chosen -- and `<Image src="">` makes the browser
+                        re-download the whole page as if it were the image,
+                        which Next warns about in the console.
+
+                        The section still renders without it: the heading sits
+                        on the dark ground below rather than disappearing,
+                        because a missing photograph should cost the picture,
+                        not the page.
+                    */}
+                    {imageUrl ? (
+                        <Image
+                            src={imageUrl}
+                            alt="About Us Hero"
+                            fill
+                            className="object-cover"
+                            priority
+                            quality={90}
+                        />
+                    ) : null}
+                    {/* Dark overlay for better text readability. Kept even with
+                        no image so the text contrast is identical either way. */}
                     <div className="absolute inset-0 bg-black/40" />
                 </div>
 

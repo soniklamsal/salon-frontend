@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useAuth, useUser } from "@clerk/nextjs";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 
 import { readApiError } from "@/lib/api/api-error";
-import { CLERK_ENABLED, SIGN_IN_PATH } from "@/lib/auth";
+import { useAuthConfigured } from "@/features/auth/components/auth-provider";
+import { authHeader } from "@/lib/api/session-token";
+import { SIGN_IN_PATH } from "@/lib/auth";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
@@ -22,9 +24,8 @@ import { Skeleton } from "@/components/ui/skeleton";
  * `bookings.ContactMessage` for the admin to read.
  */
 
-/** What the form needs from Clerk, so the fields below never import it. */
+/** What the form needs from the session, so the fields never import it. */
 type AuthBits = {
-  getToken: () => Promise<string | null>;
   fullName: string;
   email: string;
 } | null;
@@ -59,18 +60,17 @@ function SignInToMessage() {
 }
 
 /**
- * Reads Clerk and decides whether the fields are shown.
+ * Reads the session and decides whether the fields are shown.
  *
- * Split from the fields below for the same reason `BookingFlow` is: the hooks
- * live here, so the form itself takes plain values and does not import Clerk.
+ * Split from the fields below for the same reason `BookingFlow` is: the hook
+ * lives here, so the form itself takes plain values and knows nothing of auth.
  */
 function ContactFormWithAuth({ endpoint }: { endpoint: string }) {
-  const { getToken } = useAuth();
-  const { user, isLoaded, isSignedIn } = useUser();
+  const { data: session, status } = useSession();
 
-  // Clerk resolves after hydration. Showing the sign-in prompt during that
-  // moment would flash it at someone who is in fact signed in.
-  if (!isLoaded) {
+  // The session resolves after hydration. Showing the sign-in prompt during
+  // that moment would flash it at someone who is in fact signed in.
+  if (status === "loading") {
     return (
       <div className="space-y-6" aria-hidden>
         <Skeleton className="h-12 w-full rounded-none" />
@@ -80,15 +80,14 @@ function ContactFormWithAuth({ endpoint }: { endpoint: string }) {
     );
   }
 
-  if (!isSignedIn) return <SignInToMessage />;
+  if (status !== "authenticated") return <SignInToMessage />;
 
   return (
     <ContactFormFields
       endpoint={endpoint}
       auth={{
-        getToken: () => getToken(),
-        fullName: user?.fullName ?? "",
-        email: user?.primaryEmailAddress?.emailAddress ?? "",
+        fullName: session.user?.name ?? "",
+        email: session.user?.email ?? "",
       }}
     />
   );
@@ -96,12 +95,12 @@ function ContactFormWithAuth({ endpoint }: { endpoint: string }) {
 
 export function ContactForm({ endpoint }: { endpoint: string }) {
   /*
-    With no Clerk keys the site still has to work -- the hooks above throw
-    outside <ClerkProvider>, and gating the form on an auth system that is not
-    configured would silently lose every enquiry. Same guard as the booking
-    flow.
+    With sign-in unconfigured the site still has to work: gating the form on an
+    auth system that is not set up would silently lose every enquiry. Same
+    guard as the booking flow.
   */
-  return CLERK_ENABLED ? (
+  const configured = useAuthConfigured();
+  return configured ? (
     <ContactFormWithAuth endpoint={endpoint} />
   ) : (
     <ContactFormFields endpoint={endpoint} auth={null} />
@@ -162,17 +161,17 @@ function ContactFormFields({
     try {
       /*
         The token identifies the sender to the backend, which stamps the
-        message with the verified Clerk id -- the body is never trusted for
-        that. Absent when Clerk is not configured, and the endpoint still
+        message with the verified Google id -- the body is never trusted for
+        that. Empty when signed out or unconfigured, and the endpoint still
         accepts the message in that case rather than losing a real enquiry.
       */
-      const token = auth ? await auth.getToken().catch(() => null) : null;
+      const headers = auth ? await authHeader() : {};
 
       const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...headers,
         },
         body: JSON.stringify({
           name: form.name.trim(),

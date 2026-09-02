@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/auth";
 
 import { BackButton } from "@/components/shared/back-button";
 import { MyBookings } from "@/features/booking/components/my-bookings";
-import { CLERK_ENABLED, SIGN_IN_PATH } from "@/lib/auth";
+import { isAuthConfigured, SIGN_IN_PATH } from "@/lib/auth";
 import { MY_BOOKINGS_ENDPOINT } from "@/lib/api/booking";
 import { NOINDEX } from "@/lib/seo/site";
 
@@ -16,7 +16,7 @@ import { NOINDEX } from "@/lib/seo/site";
  * and buried a customer's order ID several screens down a marketing page.
  *
  * Gated the same way as /services, and for the same reason — see the note in
- * that file about Clerk 7 deprecating route-matcher middleware.
+ * that file about the page being the authoritative check, not the proxy.
  */
 
 export const metadata: Metadata = {
@@ -26,10 +26,10 @@ export const metadata: Metadata = {
 };
 
 export default async function StatusPage() {
-  if (CLERK_ENABLED) {
-    const { userId } = await auth();
-    if (!userId) {
-      redirect(`${SIGN_IN_PATH}?redirect_url=/status`);
+  if (isAuthConfigured()) {
+    const session = await auth();
+    if (!session?.user) {
+      redirect(`${SIGN_IN_PATH}?callbackUrl=/status`);
     }
   }
 

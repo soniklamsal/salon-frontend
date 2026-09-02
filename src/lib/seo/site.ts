@@ -1,7 +1,7 @@
 /**
  * The site's own canonical origin.
  *
- * Distinct from `SALON_API_URL`, which is where the Django backend lives — this
+ * Distinct from `NEXT_PUBLIC_SALON_API_URL`, which is where the Django backend lives — this
  * is where *this* app is served from, and it is what `metadataBase`, the
  * sitemap and robots.txt all resolve their absolute URLs against.
  *
@@ -9,7 +9,7 @@
  * it: metadata, `sitemap.ts` and `robots.ts` all run on the server.
  *
  * The default is the dev origin, which keeps `next build` working in a checkout
- * with no `.env.local`. In production this must be set — an unset value would
+ * with no `.env`. In production this must be set — an unset value would
  * publish `http://localhost:3000` as the canonical URL in every Open Graph tag
  * and sitemap entry, which is worse than having no tags at all. That is not a
  * hypothetical: it is what the site was doing before `warnIfUnconfigured()`
