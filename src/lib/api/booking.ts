@@ -3,6 +3,7 @@ import type {
   BookingConfig,
   BookingCopy,
   Service,
+  TimeSlot,
 } from "@/lib/types/content-types";
 import { FALLBACK_BOOKING_CONFIG } from "@/lib/fallbacks/booking-fallback";
 
@@ -21,7 +22,9 @@ import { FALLBACK_BOOKING_CONFIG } from "@/lib/fallbacks/booking-fallback";
  */
 
 const API_BASE = (
-  process.env.SALON_API_URL ?? "http://127.0.0.1:8001/api/v1"
+  process.env.NEXT_PUBLIC_SALON_API_URL ?? 
+  process.env.SALON_API_URL ?? 
+  "http://localhost:8000/api/v1"
 ).replace(/\/$/, "");
 
 const REVALIDATE_SECONDS = Number(process.env.SALON_API_REVALIDATE ?? 60);
@@ -142,5 +145,50 @@ export async function getBookingConfig(): Promise<BookingConfig> {
       }) — using fallback booking configuration.`
     );
     return FALLBACK_BOOKING_CONFIG;
+  }
+}
+
+/**
+ * Fetch available time slots for a barber on a specific date.
+ * Used in the time slot selection step of the booking flow.
+ */
+export async function fetchTimeSlots(
+  barberId: number,
+  date: string
+): Promise<TimeSlot[]> {
+  const url = `${API_BASE}/barbers/${barberId}/time-slots/?date=${date}`;
+  console.log(`[booking API] Fetching time slots from: ${url}`);
+  
+  try {
+    const response = await fetch(url, {
+      headers: { Accept: "application/json" },
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+    });
+
+    console.log(`[booking API] Response status: ${response.status}`);
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => 'Unable to read error');
+      console.error(`[booking API] Error response:`, errorText);
+      throw new Error(`${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json() as { 
+      barber_id: number; 
+      barber_name: string; 
+      date: string; 
+      slots: TimeSlot[] 
+    };
+    
+    console.log(`[booking API] Successfully fetched ${data.slots?.length || 0} slots`);
+    return data.slots || [];
+  } catch (error) {
+    console.error(
+      `[booking] Failed to fetch time slots for barber ${barberId} on ${date}:`,
+      error instanceof Error ? error.message : String(error),
+      error
+    );
+    // Return empty array on error - the UI will show "No slots available"
+    return [];
   }
 }

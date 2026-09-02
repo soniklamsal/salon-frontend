@@ -248,6 +248,16 @@ export type Barber = {
   order: number;
 };
 
+export type TimeSlot = {
+  id: number;
+  date: string; // YYYY-MM-DD format
+  startTime: string; // HH:MM:SS format
+  endTime: string; // HH:MM:SS format
+  timeLabel: string; // Formatted display like "10:00 AM – 11:00 AM"
+  isBooked: boolean; // true if slot is unavailable
+  order: number;
+};
+
 /** Wording of the booking form's steps — `bookings.BookingSection` in the admin. */
 export type BookingCopy = {
   serviceHeading: string;

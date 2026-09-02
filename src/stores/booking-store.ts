@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import type { Barber, Service } from "@/lib/types/content-types";
+import type { Barber, Service, TimeSlot } from "@/lib/types/content-types";
 
 /**
  * The booking flow's state: which service, which stylist, the customer's
@@ -57,6 +57,12 @@ type BookingState = {
   service: Service | null;
   barber: Barber | null;
 
+  // --- Step 2.5: time slot selection
+  timeSlot: TimeSlot | null;
+  selectedDate: string | null; // YYYY-MM-DD format
+  availableSlots: TimeSlot[];
+  loadingSlots: boolean;
+
   // --- Step 3: their details
   name: string;
   address: string;
@@ -77,6 +83,10 @@ type BookingActions = {
   setStep: (step: number) => void;
   setService: (service: Service | null) => void;
   setBarber: (barber: Barber | null) => void;
+  setTimeSlot: (timeSlot: TimeSlot | null) => void;
+  setSelectedDate: (date: string | null) => void;
+  setAvailableSlots: (slots: TimeSlot[]) => void;
+  setLoadingSlots: (loading: boolean) => void;
   setField: (
     field: "name" | "address" | "phone" | "description",
     value: string
@@ -94,6 +104,10 @@ const INITIAL: BookingState = {
   step: 0,
   service: null,
   barber: null,
+  timeSlot: null,
+  selectedDate: null,
+  availableSlots: [],
+  loadingSlots: false,
   name: "",
   address: "",
   phone: "",
@@ -111,6 +125,10 @@ export const useBookingStore = create<BookingState & BookingActions>((set) => ({
   setStep: (step) => set({ step }),
   setService: (service) => set({ service }),
   setBarber: (barber) => set({ barber }),
+  setTimeSlot: (timeSlot) => set({ timeSlot }),
+  setSelectedDate: (selectedDate) => set({ selectedDate }),
+  setAvailableSlots: (availableSlots) => set({ availableSlots }),
+  setLoadingSlots: (loadingSlots) => set({ loadingSlots }),
   setField: (field, value) => set({ [field]: value } as Partial<BookingState>),
   setFile: (file) => set({ file }),
   setFileError: (fileError) => set({ fileError }),
@@ -139,13 +157,15 @@ export function canAdvance(state: BookingState, step: number): boolean {
     case 1:
       return state.barber !== null;
     case 2:
+      return state.timeSlot !== null;
+    case 3:
       return (
         state.name.trim() !== "" &&
         state.address.trim() !== "" &&
         state.phone.trim() !== "" &&
         state.description.trim() !== ""
       );
-    case 3:
+    case 4:
       return state.file !== null && state.fileError === "";
     default:
       return false;

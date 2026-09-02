@@ -58,6 +58,15 @@ type Booking = {
   notes: string;
   paymentScreenshot: string;
   /**
+   * The customer's selected time slot (their preferred date/time)
+   */
+  selectedTimeSlot: {
+    date: string | null;
+    timeLabel: string | null;
+    startTime: string | null;
+    endTime: string | null;
+  } | null;
+  /**
    * When the salon has told them to come in. The customer never picks a time;
    * this is set in the admin and appears here once the booking is approved.
    */
@@ -493,20 +502,30 @@ function BookingDialog({
               quote and the time to be there. Sits next to the order ID rather
               than down in the details list, because "when do I come" is the
               question this page exists to answer — and the customer has no
-              other source for it, since they never picked one.
+              other source for it.
+              
+              Shows either:
+              1. Scheduled date/time (admin set) - highest priority
+              2. Selected time slot (customer chose) - if no scheduled time yet
+              3. "To be confirmed" message
             */}
-              {booking.orderId ? (
+              {booking.orderId || booking.selectedTimeSlot ? (
                 <div className="border-primary/40 bg-primary/5 rounded-lg border px-4 py-3 text-center">
                   <p className="text-muted-foreground text-xs tracking-wider uppercase">
-                    Come in at
+                    {booking.scheduledDate || booking.scheduledTime ? "Come in at" : "Your selected time"}
                   </p>
                   <p className="text-primary mt-1 text-lg font-bold">
-                    {slot(booking.scheduledDate, booking.scheduledTime) ||
-                      "A time we will agree with you"}
+                    {booking.scheduledDate || booking.scheduledTime
+                      ? slot(booking.scheduledDate, booking.scheduledTime)
+                      : booking.selectedTimeSlot?.timeLabel
+                        ? `${when(booking.selectedTimeSlot.date)}, ${booking.selectedTimeSlot.timeLabel}`
+                        : "A time we will agree with you"}
                   </p>
                   {!booking.scheduledDate && !booking.scheduledTime ? (
                     <p className="text-muted-foreground mt-1 text-xs">
-                      We will call you to arrange it.
+                      {booking.selectedTimeSlot?.timeLabel
+                        ? "We will confirm this time after reviewing your payment."
+                        : "We will call you to arrange it."}
                     </p>
                   ) : null}
                 </div>
@@ -548,8 +567,12 @@ function BookingDialog({
                 <Row
                   label="Time to come"
                   value={
-                    slot(booking.scheduledDate, booking.scheduledTime) ||
-                    "Not set yet"
+                    // Priority: 1. Admin scheduled time, 2. Customer selected slot, 3. Not set
+                    booking.scheduledDate || booking.scheduledTime
+                      ? slot(booking.scheduledDate, booking.scheduledTime) || "—"
+                      : booking.selectedTimeSlot?.timeLabel
+                        ? `${when(booking.selectedTimeSlot.date)}, ${booking.selectedTimeSlot.timeLabel} (pending confirmation)`
+                        : "Not set yet"
                   }
                 />
                 <Row label="Requested" value={exactly(booking.createdAt) ?? "—"} />
@@ -714,12 +737,20 @@ function BookingsList({ endpoint }: { endpoint: string }) {
       }
 
       try {
-        const response = await fetch(endpoint, {
+        // Add cache-busting timestamp to force fresh data
+        const cacheBuster = `?_t=${Date.now()}`;
+        const response = await fetch(endpoint + cacheBuster, {
           headers: { Authorization: `Bearer ${token}` },
           cache: "no-store",
         });
         if (!response.ok) throw new Error(String(response.status));
         const payload = await response.json();
+
+        // Debug log to help verify selected time slots are being received
+        if (payload.bookings && payload.bookings.length > 0) {
+          console.log('[My Bookings] First booking selectedTimeSlot:', payload.bookings[0].selectedTimeSlot);
+        }
+
         if (cancelled) return;
         setState({ status: "ready", bookings: payload.bookings ?? [] });
       } catch {

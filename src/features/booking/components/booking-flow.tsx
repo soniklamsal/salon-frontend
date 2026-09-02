@@ -14,13 +14,14 @@ import { CLERK_ENABLED } from "@/lib/auth";
 import { barberStepProblem, depositFor, isBookable } from "@/lib/api/booking";
 import { cn } from "@/lib/utils";
 import { useBookingStore } from "@/stores/booking-store";
+import { TimeSlotStep } from "./time-slot-step";
 import type { BookingConfig } from "@/lib/types/content-types";
 /**
- * The booking flow: service -> barber -> details -> payment.
+ * The booking flow: service -> barber -> time slot -> details -> payment.
  *
- * One client component rather than four routes. The whole thing is a single
+ * One client component rather than five routes. The whole thing is a single
  * submission — nothing is written until the last step — so putting the steps
- * in the URL would invite someone to land on step 4 with no service chosen and
+ * in the URL would invite someone to land on step 5 with no service chosen and
  * nothing to post.
  *
  * The payment step is not a payment *integration*. The customer scans the
@@ -99,7 +100,7 @@ function ChoiceCard({
         selected
           ? "border-primary bg-primary/10"
           : !disabled &&
-              "border-border hover:border-foreground/40 hover:bg-foreground/3"
+          "border-border hover:border-foreground/40 hover:bg-foreground/3"
       )}
     >
       {children}
@@ -171,6 +172,7 @@ function BookingForm({
   const step = useBookingStore((s) => s.step);
   const service = useBookingStore((s) => s.service);
   const barber = useBookingStore((s) => s.barber);
+  const timeSlot = useBookingStore((s) => s.timeSlot);
   const name = useBookingStore((s) => s.name);
   const address = useBookingStore((s) => s.address);
   const phone = useBookingStore((s) => s.phone);
@@ -242,12 +244,19 @@ function BookingForm({
   }, [accountName, setField]);
 
   // All wording comes from `bookings.BookingSection` in the admin. The order
-  // of the four steps is structural and stays in code.
+  // of the five steps is structural and stays in code.
   const copy = config.copy;
-  const steps = [copy.serviceStep, copy.barberStep, copy.detailsStep, copy.paymentStep];
+  const steps = [
+    copy.serviceStep,
+    copy.barberStep,
+    "Time Slot", // Hardcoded for now - will add to backend model later
+    copy.detailsStep,
+    copy.paymentStep,
+  ];
   const headings = [
     copy.serviceHeading,
     copy.barberHeading,
+    "Select Time Slot", // Hardcoded for now - will add to backend model later
     copy.detailsHeading,
     copy.paymentHeading,
   ];
@@ -295,10 +304,9 @@ function BookingForm({
     body.append("notes", description.trim());
     // No email. It comes from the verified Clerk token server-side, which is
     // the only source that cannot be edited by whoever is posting.
-    // No date or time is sent. The salon sets the visit time in the admin and
-    // the customer is told it on approval — see the Handling section there.
     if (service) body.append("service", String(service.id));
     if (barber) body.append("barber", String(barber.id));
+    if (timeSlot) body.append("time_slot", String(timeSlot.id));
     if (file) body.append("paymentScreenshot", file);
 
     try {
@@ -338,25 +346,23 @@ function BookingForm({
   if (status === "sent") {
     const amount = depositFor(service, config.esewa.depositPercent);
     /*
-      `note` is the bit at the side. The customer does not choose a time — the
-      salon sets it when it approves the booking — so the Time row says where
-      the time will come from rather than leaving a blank the customer reads
-      as something they forgot to fill in.
+      `note` is the bit at the side. Now that the customer picks a time slot,
+      we show their selected time in the confirmation.
     */
     type Row = { label: string; value: string; note?: string };
     const rows: Row[] = [
       { label: "Service", value: service?.label ?? "—" },
       { label: "Barber", value: barber?.name ?? "—" },
+      {
+        label: "Time Slot",
+        value: timeSlot?.timeLabel ?? "—",
+        note: timeSlot?.date ?? undefined,
+      },
       { label: "Name", value: name.trim() || "—" },
       { label: "Address", value: address.trim() || "—" },
       { label: "Phone", value: phone.trim() || "—" },
       // Omitted when the account has none — there is nothing to confirm back.
       ...(accountEmail ? [{ label: "Email", value: accountEmail }] : []),
-      {
-        label: "Time",
-        value: "We will set this",
-        note: "You get your time when we approve your booking",
-      },
       { label: "Description", value: description.trim() || "—" },
       {
         label: "Paid",
@@ -459,7 +465,9 @@ function BookingForm({
         // window, so a barber can go unavailable between the page being
         // rendered and the customer choosing them.
         ? Boolean(barber && isBookable(barber))
-        : true;
+        : step === 2
+          ? Boolean(timeSlot)
+          : true;
   // Email is deliberately absent: it is the one optional field. Everything
   // else here is required by the API too, so a form that let them through
   // would only produce a 400 two steps later.
@@ -606,7 +614,9 @@ function BookingForm({
         </div>
       ) : null}
 
-      {step === 2 ? (
+      {step === 2 ? <TimeSlotStep /> : null}
+
+      {step === 3 ? (
         <div className="grid gap-5 sm:max-w-xl">
           <div className="grid gap-2">
             <Label htmlFor="booking-name">Name <span className="text-primary">*</span></Label>
@@ -701,7 +711,7 @@ function BookingForm({
         </div>
       ) : null}
 
-      {step === 3 ? (
+      {step === 4 ? (
         <div className="grid gap-8 sm:max-w-xl">
           <div className="border-border rounded-xl border p-5">
             {/* What to send, worked out from the chosen service. */}
@@ -829,7 +839,7 @@ function BookingForm({
           <Button
             type="button"
             size="lg"
-            disabled={!canContinue || (step === 2 && !detailsValid)}
+            disabled={!canContinue || (step === 3 && !detailsValid)}
             onClick={() => go(step + 1)}
           >
             Continue
