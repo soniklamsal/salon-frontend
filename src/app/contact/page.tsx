@@ -7,6 +7,7 @@ import { JsonLd } from "@/components/shared/json-ld";
 import { SocialIconRow } from "@/components/shared/social-icon";
 import { CONTACT_ENDPOINT } from "@/lib/api/booking";
 import { getSiteContent } from "@/lib/api/content";
+import { SITE_CHROME } from "@/lib/site-chrome";
 import { canonicalMetadata } from "@/lib/seo/site";
 import { buildContactPage, buildHairSalon } from "@/lib/seo/structured-data";
 
@@ -46,7 +47,10 @@ export const metadata: Metadata = {
 };
 
 export default async function ContactPage() {
-  const content = await getSiteContent();
+  // The message form must work even if the salon's contact details have not
+  // loaded, so the structural chrome stands in for a `null` — the phone/email
+  // simply show empty rather than a made-up number, and the form still posts.
+  const content = (await getSiteContent()) ?? SITE_CHROME;
 
   return (
     <div className={`${oswald.variable} contents`}>

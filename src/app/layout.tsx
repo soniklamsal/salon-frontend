@@ -7,6 +7,7 @@ import { TimeToRoarFooter } from "@/components/layout/time-to-roar-footer";
 import { AuthProvider } from "@/features/auth/components/auth-provider";
 import { isAuthConfigured } from "@/lib/auth";
 import { getSiteContent } from "@/lib/api/content";
+import { SITE_CHROME } from "@/lib/site-chrome";
 import { absoluteUrl, SITE_URL, warnIfUnconfigured } from "@/lib/seo/site";
 
 // Jost is a variable font, so every weight the design uses (600/700/800) comes
@@ -47,7 +48,9 @@ const poppins = Poppins({
  */
 export async function generateMetadata(): Promise<Metadata> {
   warnIfUnconfigured();
-  const { site, hero } = await getSiteContent();
+  // The frame must render even if the backend has never loaded, so fall back to
+  // the minimal structural chrome — never to invented content.
+  const { site, hero } = (await getSiteContent()) ?? SITE_CHROME;
 
   return {
     metadataBase: new URL(SITE_URL),
@@ -90,7 +93,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const { site, navLinks, socialLinks, footer } = await getSiteContent();
+  // Same as generateMetadata: the nav and footer render on every route, so the
+  // structural chrome stands in when the backend has never loaded.
+  const { site, navLinks, socialLinks, footer } =
+    (await getSiteContent()) ?? SITE_CHROME;
 
   /*
     Evaluated here, on the server, because the variables it reads are secrets

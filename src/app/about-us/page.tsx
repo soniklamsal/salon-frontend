@@ -6,6 +6,7 @@ import { ScrollToTop } from "@/features/about/components/scroll-to-top";
 import { BackButton } from "@/components/shared/back-button";
 import { JsonLd } from "@/components/shared/json-ld";
 import { SimpleImageHero } from "@/features/about/components/simple-image-hero";
+import { ContentUnavailable } from "@/components/shared/content-unavailable";
 import { getAboutContent } from "@/lib/api/about";
 import { buildAboutPage } from "@/lib/seo/structured-data";
 
@@ -17,6 +18,7 @@ import { buildAboutPage } from "@/lib/seo/structured-data";
 
 export default async function AboutPage() {
   const about = await getAboutContent();
+  if (!about) return <ContentUnavailable what="About us" />;
 
   const content = (
     <>

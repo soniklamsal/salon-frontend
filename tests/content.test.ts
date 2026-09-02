@@ -1,13 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { getSiteContent } from "@/lib/api/content";
-import { FALLBACK_CONTENT } from "@/lib/fallbacks/content-fallback";
 
 /**
- * `getSiteContent()` is the single point where a Django outage either costs the
- * salon its website or costs it nothing. Its contract is that it never throws
- * and never returns a partial object, so every one of these cases is about what
- * a visitor sees when something upstream has gone wrong.
+ * `getSiteContent()` is the single point where a Django outage is handled. Its
+ * contract: it never throws, it returns `null` when the backend cannot be
+ * reached (so callers show a loading/updating state rather than invented
+ * content), and on success it guarantees the array bands are present so a
+ * partial payload degrades to empty sections rather than a crash.
  */
 
 function jsonResponse(body: unknown, status = 200) {
@@ -21,7 +21,7 @@ function jsonResponse(body: unknown, status = 200) {
 
 beforeEach(() => {
   // The module warns on every failure path by design. Silenced so a passing run
-  // is quiet; the assertions below are what prove the fallback happened.
+  // is quiet; the assertions below are what prove the behaviour.
   vi.spyOn(console, "warn").mockImplementation(() => {});
 });
 
@@ -31,22 +31,22 @@ afterEach(() => {
 });
 
 describe("getSiteContent", () => {
-  it("serves bundled content when the backend is unreachable", async () => {
+  it("returns null when the backend is unreachable, never fake content", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockRejectedValue(new Error("ECONNREFUSED"))
     );
 
-    await expect(getSiteContent()).resolves.toEqual(FALLBACK_CONTENT);
+    await expect(getSiteContent()).resolves.toBeNull();
   });
 
-  it("serves bundled content on a non-200, rather than rendering an error", async () => {
+  it("returns null on a non-200 rather than throwing", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse({}, 500)));
 
-    await expect(getSiteContent()).resolves.toEqual(FALLBACK_CONTENT);
+    await expect(getSiteContent()).resolves.toBeNull();
   });
 
-  it("serves bundled content when the body is not JSON", async () => {
+  it("returns null when the body is not JSON", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue({
@@ -59,34 +59,26 @@ describe("getSiteContent", () => {
       } as unknown as Response)
     );
 
-    await expect(getSiteContent()).resolves.toEqual(FALLBACK_CONTENT);
+    await expect(getSiteContent()).resolves.toBeNull();
   });
 
-  it("fills in only the sections the backend omitted", async () => {
+  it("passes the backend's content straight through on success", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue(
-        jsonResponse({
-          site: { brandName: "CHOPPERS" },
-        })
+        jsonResponse({ site: { brandName: "CHOPPERS" } })
       )
     );
 
     const content = await getSiteContent();
 
-    // The key that was sent wins.
-    expect(content.site.brandName).toBe("CHOPPERS");
-    // Its siblings survive rather than becoming undefined — the merge is
-    // per-key, so a backend that sends one field does not blank the rest.
-    expect(content.site.metaTitle).toBe(FALLBACK_CONTENT.site.metaTitle);
-    // And a section that was not mentioned at all is intact.
-    expect(content.hero).toEqual(FALLBACK_CONTENT.hero);
+    // What the backend sent is what is served — no bundled copy merged over it.
+    expect(content?.site.brandName).toBe("CHOPPERS");
   });
 
-  it("treats an empty array as a real answer, not a missing one", async () => {
-    // The distinction `pick()` exists for. An admin who unpublishes every nav
-    // link means it: resurrecting the bundled links would put items in the
-    // header that the salon deliberately removed.
+  it("treats an empty array as a real answer", async () => {
+    // An admin who unpublishes every nav link means it: the empty array is
+    // preserved, not resurrected from a default.
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue(jsonResponse({ navLinks: [], socialLinks: [] }))
@@ -94,19 +86,20 @@ describe("getSiteContent", () => {
 
     const content = await getSiteContent();
 
-    expect(content.navLinks).toEqual([]);
-    expect(content.socialLinks).toEqual([]);
+    expect(content?.navLinks).toEqual([]);
+    expect(content?.socialLinks).toEqual([]);
   });
 
-  it("falls back for a key sent as null, which is not an answer", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue(jsonResponse({ navLinks: null }))
-    );
+  it("guarantees the array bands exist even if the backend omits them", async () => {
+    // A missing array must not crash a `.map()` deep in a component; it degrades
+    // to an empty section instead.
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse({})));
 
     const content = await getSiteContent();
 
-    expect(content.navLinks).toEqual(FALLBACK_CONTENT.navLinks);
+    expect(content?.navLinks).toEqual([]);
+    expect(content?.footerLinks).toEqual([]);
+    expect(content?.socialLinks).toEqual([]);
   });
 
   it("requests the homepage endpoint with a timeout and a cache tag", async () => {

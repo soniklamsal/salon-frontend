@@ -7,16 +7,21 @@ import { JsonLd } from "@/components/shared/json-ld";
 import { MotivationLines } from "@/features/homepage/components/motivation-lines";
 import { OurStory } from "@/features/homepage/components/our-story";
 import { WhoWeAre } from "@/features/homepage/components/who-we-are";
+import { ContentUnavailable } from "@/components/shared/content-unavailable";
 import { getSiteContent } from "@/lib/api/content";
 import { buildHairSalon } from "@/lib/seo/structured-data";
 
 /**
  * Every band on this page is edited in the Django admin and arrives in one
- * request. `getSiteContent()` never throws — it falls back to the copy the site
- * shipped with — so each section below is handed a complete object to render.
+ * request. `getSiteContent()` returns `null` only when the backend has never
+ * loaded — the skeleton in `loading.tsx` covers the wait, and once a real
+ * render is cached (ISR) it keeps serving. A `null` here therefore means a
+ * genuine first-time outage, which shows the honest updating state, not
+ * invented content.
  */
 export default async function Home() {
   const content = await getSiteContent();
+  if (!content) return <ContentUnavailable what="The home page" />;
 
   // Two bands can be switched off from the admin. Deciding here rather than
   // inside each component keeps the "is there anything to show" question in one

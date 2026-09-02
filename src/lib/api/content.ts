@@ -1,4 +1,3 @@
-import { FALLBACK_CONTENT } from "@/lib/fallbacks/content-fallback";
 import type { SiteContent } from "@/lib/types/content-types";
 
 /**
@@ -9,10 +8,14 @@ import type { SiteContent } from "@/lib/types/content-types";
  * pass, so the layout and the page can each call `getSiteContent()` and only
  * one request leaves the process.
  *
- * Failure is never fatal. Anything short of a well-formed 200 falls back to
- * `FALLBACK_CONTENT` — the copy the site shipped with — so a stopped backend
- * costs you the ability to edit content, not the ability to serve the site.
- * That also means `next build` works with nothing else running.
+ * Returns `null` when the backend cannot be reached, rather than inventing
+ * content. The old behaviour substituted a bundled copy, which is exactly what
+ * this removes: a customer must see the salon's real content or a clear
+ * loading/updating state, never a made-up hero, gallery or price. Callers
+ * decide what a `null` looks like — a page renders `ContentUnavailable`, the
+ * layout falls back to a minimal structural chrome so the nav and footer still
+ * render. Successful renders are cached (ISR, below), so a brief outage or a
+ * Render cold-start keeps serving the last real page rather than nothing.
  */
 
 const API_BASE = (
@@ -20,50 +23,33 @@ const API_BASE = (
 ).replace(/\/$/, "");
 
 // Seconds. The page is prerendered and refreshed on this interval, so an admin
-// edit shows up within a minute without a redeploy.
+// edit shows up within a minute without a redeploy. It is also what makes the
+// site resilient: the last good render is served while a new one is fetched.
 const REVALIDATE_SECONDS = Number(process.env.SALON_API_REVALIDATE ?? 60);
 
-// A stopped backend should fail fast rather than hold the render open.
+// A stopped backend should fail fast rather than hold the render open. A cold
+// Render free-tier instance can take longer than this to wake; that first
+// request then serves the cached page (or the loading skeleton) while the
+// background revalidation waits for the backend.
 const TIMEOUT_MS = Number(process.env.SALON_API_TIMEOUT_MS ?? 4000);
 
-/** Uses `fallback` when the API omits a key entirely; an empty array is a real answer. */
-function pick<T>(value: T | undefined | null, fallback: T): T {
-  return value === undefined || value === null ? fallback : value;
-}
-
-/**
- * Fills gaps in a payload from the fallback, one section at a time.
- *
- * A backend that grows a field before this app knows about it is harmless; a
- * backend that is missing one this app renders would otherwise throw deep
- * inside a component. Object sections are merged key-by-key so a partial
- * section still renders, arrays are taken whole.
- */
-function withFallbacks(payload: Partial<SiteContent>): SiteContent {
-  const f = FALLBACK_CONTENT;
+/** The array bands the page and layout iterate. Guaranteed present so a
+ *  backend that omits one degrades to an empty section, never a crash. */
+function normalize(payload: Partial<SiteContent>): SiteContent {
   return {
-    site: { ...f.site, ...payload.site },
-    navLinks: pick(payload.navLinks, f.navLinks),
-    footerLinks: pick(payload.footerLinks, f.footerLinks),
-    socialLinks: pick(payload.socialLinks, f.socialLinks),
-    hero: { ...f.hero, ...payload.hero },
-    whoWeAre: { ...f.whoWeAre, ...payload.whoWeAre },
-    motivation: { ...f.motivation, ...payload.motivation },
-    gallery: { ...f.gallery, ...payload.gallery },
-    classes: { ...f.classes, ...payload.classes },
-    ourStory: { ...f.ourStory, ...payload.ourStory },
-    asSeenOn: { ...f.asSeenOn, ...payload.asSeenOn },
-    followUs: { ...f.followUs, ...payload.followUs },
-    footer: { ...f.footer, ...payload.footer },
+    ...(payload as SiteContent),
+    navLinks: payload.navLinks ?? [],
+    footerLinks: payload.footerLinks ?? [],
+    socialLinks: payload.socialLinks ?? [],
   };
 }
 
-export async function getSiteContent(): Promise<SiteContent> {
+export async function getSiteContent(): Promise<SiteContent | null> {
   try {
     const response = await fetch(`${API_BASE}/homepage/`, {
       headers: { Accept: "application/json" },
       // Not `no-store`: the content changes when someone edits it, not on every
-      // request, so the page is worth prerendering.
+      // request, so the page is worth prerendering and caching.
       next: { revalidate: REVALIDATE_SECONDS, tags: ["site-content"] },
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
@@ -72,14 +58,15 @@ export async function getSiteContent(): Promise<SiteContent> {
       throw new Error(`${response.status} ${response.statusText}`);
     }
 
-    return withFallbacks((await response.json()) as Partial<SiteContent>);
+    return normalize((await response.json()) as Partial<SiteContent>);
   } catch (error) {
-    // Warn rather than throw: the page still renders, just from bundled copy.
+    // Warn, and return null. The page shows a loading/updating state and, once
+    // it has rendered once, the cached copy keeps serving.
     console.warn(
       `[content] ${API_BASE}/homepage/ unavailable (${
         error instanceof Error ? error.message : String(error)
-      }) — serving bundled fallback content.`
+      }) — no cached content to serve yet.`
     );
-    return FALLBACK_CONTENT;
+    return null;
   }
 }
