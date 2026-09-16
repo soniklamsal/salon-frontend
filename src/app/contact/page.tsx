@@ -10,6 +10,7 @@ import { getSiteContent } from "@/lib/api/content";
 import { SITE_CHROME } from "@/lib/site-chrome";
 import { canonicalMetadata } from "@/lib/seo/site";
 import { buildContactPage, buildHairSalon } from "@/lib/seo/structured-data";
+import { phoneNumbers, telHref } from "@/lib/phone";
 
 /**
  * Contact Us, laid out like the devis-gym demo's contact page.
@@ -88,12 +89,19 @@ export default async function ContactPage() {
                     <p className="text-muted mb-1 text-xs font-bold tracking-wide uppercase">
                       Phone
                     </p>
-                    <a
-                      href={`tel:${content.footer.phone.replace(/\s+/g, "")}`}
-                      className="hover:text-accent text-white transition-colors"
-                    >
-                      {content.footer.phone}
-                    </a>
+                    {/* One link per number: a single `tel:` holding both
+                        would read the comma as a dial pause. See lib/phone. */}
+                    <div className="flex flex-col items-start">
+                      {phoneNumbers(content.footer.phone).map((number) => (
+                        <a
+                          key={number}
+                          href={telHref(number)}
+                          className="hover:text-accent text-white transition-colors"
+                        >
+                          {number}
+                        </a>
+                      ))}
+                    </div>
                   </div>
                   <div>
                     <p className="text-muted mb-1 text-xs font-bold tracking-wide uppercase">
