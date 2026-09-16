@@ -59,7 +59,9 @@ type BookingState = {
 
   // --- Step 2.5: time slot selection
   timeSlot: TimeSlot | null;
-  selectedDate: string | null; // YYYY-MM-DD format
+  /** 0 = Sunday … 6 = Saturday. Slots repeat weekly, so the customer picks
+   *  a day, not a date; the salon sets the real date when it approves. */
+  selectedWeekday: number | null;
   availableSlots: TimeSlot[];
   loadingSlots: boolean;
 
@@ -84,7 +86,7 @@ type BookingActions = {
   setService: (service: Service | null) => void;
   setBarber: (barber: Barber | null) => void;
   setTimeSlot: (timeSlot: TimeSlot | null) => void;
-  setSelectedDate: (date: string | null) => void;
+  setSelectedWeekday: (weekday: number | null) => void;
   setAvailableSlots: (slots: TimeSlot[]) => void;
   setLoadingSlots: (loading: boolean) => void;
   setField: (
@@ -105,7 +107,7 @@ const INITIAL: BookingState = {
   service: null,
   barber: null,
   timeSlot: null,
-  selectedDate: null,
+  selectedWeekday: null,
   availableSlots: [],
   loadingSlots: false,
   name: "",
@@ -126,7 +128,7 @@ export const useBookingStore = create<BookingState & BookingActions>((set) => ({
   setService: (service) => set({ service }),
   setBarber: (barber) => set({ barber }),
   setTimeSlot: (timeSlot) => set({ timeSlot }),
-  setSelectedDate: (selectedDate) => set({ selectedDate }),
+  setSelectedWeekday: (selectedWeekday) => set({ selectedWeekday }),
   setAvailableSlots: (availableSlots) => set({ availableSlots }),
   setLoadingSlots: (loadingSlots) => set({ loadingSlots }),
   setField: (field, value) => set({ [field]: value } as Partial<BookingState>),

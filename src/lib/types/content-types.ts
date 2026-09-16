@@ -250,11 +250,15 @@ export type Barber = {
 
 export type TimeSlot = {
   id: number;
-  date: string; // YYYY-MM-DD format
+  /** 0 = Sunday … 6 = Saturday. The salon's week starts on Sunday. */
+  weekday: number;
+  /** The day spelled out, e.g. "Sunday" — supplied by the API, not derived here. */
+  weekdayLabel: string;
   startTime: string; // HH:MM:SS format
   endTime: string; // HH:MM:SS format
   timeLabel: string; // Formatted display like "10:00 AM – 11:00 AM"
-  isBooked: boolean; // true if slot is unavailable
+  /** True when the salon has taken this weekly time off the form. */
+  isBooked: boolean;
   order: number;
 };
 

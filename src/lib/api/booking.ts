@@ -153,16 +153,19 @@ export async function getBookingConfig(): Promise<BookingConfig> {
 }
 
 /**
- * Fetch available time slots for a barber on a specific date.
- * Used in the time slot selection step of the booking flow.
+ * Fetch the times a barber offers on one day of the week.
+ *
+ * Slots repeat weekly, so this asks "what does this barber offer on a Sunday"
+ * rather than "what is free on the 21st". `weekday` is 0 for Sunday through 6
+ * for Saturday, matching the salon's week rather than JavaScript's.
  */
 export async function fetchTimeSlots(
   barberId: number,
-  date: string
+  weekday: number
 ): Promise<TimeSlot[]> {
-  const url = `${API_BASE}/barbers/${barberId}/time-slots/?date=${date}`;
+  const url = `${API_BASE}/barbers/${barberId}/time-slots/?weekday=${weekday}`;
   console.log(`[booking API] Fetching time slots from: ${url}`);
-  
+
   try {
     const response = await fetch(url, {
       headers: { Accept: "application/json" },
@@ -177,18 +180,19 @@ export async function fetchTimeSlots(
       throw new Error(`${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json() as { 
-      barber_id: number; 
-      barber_name: string; 
-      date: string; 
-      slots: TimeSlot[] 
+    const data = await response.json() as {
+      barber_id: number;
+      barber_name: string;
+      weekday: number;
+      weekday_label: string;
+      slots: TimeSlot[]
     };
-    
+
     console.log(`[booking API] Successfully fetched ${data.slots?.length || 0} slots`);
     return data.slots || [];
   } catch (error) {
     console.error(
-      `[booking] Failed to fetch time slots for barber ${barberId} on ${date}:`,
+      `[booking] Failed to fetch time slots for barber ${barberId} on weekday ${weekday}:`,
       error instanceof Error ? error.message : String(error),
       error
     );

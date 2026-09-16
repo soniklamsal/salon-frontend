@@ -358,8 +358,10 @@ function BookingForm({
       { label: "Barber", value: barber?.name ?? "—" },
       {
         label: "Time Slot",
-        value: timeSlot?.timeLabel ?? "—",
-        note: timeSlot?.date ?? undefined,
+        // The day carries the booking now that slots repeat weekly, so it
+        // leads and the time follows. There is no date to show: the salon
+        // sets that when it approves.
+        value: timeSlot ? `${timeSlot.weekdayLabel}, ${timeSlot.timeLabel}` : "—",
       },
       { label: "Name", value: name.trim() || "—" },
       { label: "Address", value: address.trim() || "—" },
