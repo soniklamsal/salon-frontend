@@ -59,10 +59,13 @@ type Booking = {
   notes: string;
   paymentScreenshot: string;
   /**
-   * The customer's selected time slot (their preferred date/time)
+   * The weekly slot the customer picked -- a day and a time, not a date.
+   * The date they are actually given is `scheduledDate`, set by the salon
+   * on approval.
    */
   selectedTimeSlot: {
-    date: string | null;
+    weekday: number | null;
+    weekdayLabel: string | null;
     timeLabel: string | null;
     startTime: string | null;
     endTime: string | null;
@@ -519,7 +522,7 @@ function BookingDialog({
                     {booking.scheduledDate || booking.scheduledTime
                       ? slot(booking.scheduledDate, booking.scheduledTime)
                       : booking.selectedTimeSlot?.timeLabel
-                        ? `${when(booking.selectedTimeSlot.date)}, ${booking.selectedTimeSlot.timeLabel}`
+                        ? `${booking.selectedTimeSlot.weekdayLabel}, ${booking.selectedTimeSlot.timeLabel}`
                         : "A time we will agree with you"}
                   </p>
                   {!booking.scheduledDate && !booking.scheduledTime ? (
@@ -572,7 +575,7 @@ function BookingDialog({
                     booking.scheduledDate || booking.scheduledTime
                       ? slot(booking.scheduledDate, booking.scheduledTime) || "—"
                       : booking.selectedTimeSlot?.timeLabel
-                        ? `${when(booking.selectedTimeSlot.date)}, ${booking.selectedTimeSlot.timeLabel} (pending confirmation)`
+                        ? `${booking.selectedTimeSlot.weekdayLabel}, ${booking.selectedTimeSlot.timeLabel} (pending confirmation)`
                         : "Not set yet"
                   }
                 />
