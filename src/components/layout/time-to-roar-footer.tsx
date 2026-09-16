@@ -342,7 +342,8 @@ export function TimeToRoarFooter({
               >
                 Sonik Lamsal
               </a>
-              {" · Project assistance by Prateek Upreti"}
+              {" · Project assistance by "}
+              <span className="text-accent">Prateek Upreti</span>
             </p>
           </div>
           <button
