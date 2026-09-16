@@ -291,13 +291,25 @@ export function TimeToRoarFooter({
             <span className="text-sm font-normal tracking-widest text-white/50 uppercase sm:text-[16px]">
               Call
             </span>
-            <a
-              // Stripped of spaces so the dialler gets one token.
-              href={`tel:${content.phone.replace(/\s+/g, "")}`}
-              className="text-[clamp(20px,4vw,31px)] leading-[clamp(26px,5vw,38px)] transition-opacity hover:opacity-70"
-            >
-              {content.phone}
-            </a>
+            {/* One CMS field holds every number the salon publishes, comma
+                separated, so staff can add or drop a line in the admin without
+                a migration. Each gets its own link: a single `tel:` holding both
+                would dial the first and read the comma as a pause, then send the
+                second as tones into the live call. */}
+            {content.phone
+              .split(",")
+              .map((number) => number.trim())
+              .filter(Boolean)
+              .map((number) => (
+                <a
+                  key={number}
+                  // Stripped of spaces so the dialler gets one token.
+                  href={`tel:${number.replace(/\s+/g, "")}`}
+                  className="text-[clamp(20px,4vw,31px)] leading-[clamp(26px,5vw,38px)] transition-opacity hover:opacity-70"
+                >
+                  {number}
+                </a>
+              ))}
           </div>
 
           <div
