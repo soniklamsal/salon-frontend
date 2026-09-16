@@ -342,6 +342,7 @@ export function TimeToRoarFooter({
               >
                 Sonik Lamsal
               </a>
+              {" · Project assistance by Prateek Upreti"}
             </p>
           </div>
           <button
