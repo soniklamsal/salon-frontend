@@ -1,1 +1,347 @@
-﻿{"site":{"logo":"https://res.cloudinary.com/dr54mqokd/image/upload/v1/media/brand/logo_ogglgg","brandName":"AJ Salon","badgeCaption":"We Don't Keep Our Beauty Secrets","metaTitle":"AJ Salon - Always Make Room for a Little Beauty in Your Life","metaDescription":"Premium hair, beauty and spa treatments in Kathmandu, Nepal. Book an appointment or browse the service menu.","navCta":{"label":"Book Now","href":"/services"},"copyrightText":"Â© 2026 AJ Salon. All rights reserved."},"navLinks":[{"id":1,"label":"Home","href":"/","showInHeader":true,"showInFooter":true,"order":0},{"id":2,"label":"About Us","href":"/about-us","showInHeader":true,"showInFooter":true,"order":1},{"id":3,"label":"Service Menu","href":"/services","showInHeader":true,"showInFooter":true,"order":2},{"id":5,"label":"Contact Us","href":"/contact","showInHeader":true,"showInFooter":true,"order":3}],"footerLinks":[{"id":1,"label":"Home","href":"/","showInHeader":true,"showInFooter":true,"order":0},{"id":2,"label":"About Us","href":"/about-us","showInHeader":true,"showInFooter":true,"order":1},{"id":3,"label":"Service Menu","href":"/services","showInHeader":true,"showInFooter":true,"order":2},{"id":5,"label":"Contact Us","href":"/contact","showInHeader":true,"showInFooter":true,"order":3}],"socialLinks":[{"id":1,"platform":"facebook","url":"https://www.facebook.com/jasim.akhatar?mibextid=wwXIfr&rdid=KV5FirDeZbcCjQqQ&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F19sW7z82MG%2F%3Fmibextid%3DwwXIfr#","label":"Salon on Facebook","order":0},{"id":2,"platform":"instagram","url":"https://www.instagram.com/newgoldunisexbeautysalon?stkn=bDZjMHV0MWt6OTc5&utm_source=qr","label":"Salon on Instagram","order":1},{"id":3,"platform":"youtube","url":"https://www.youtube.com/@ajs6574","label":"saloon","order":2}],"hero":{"eyebrow":"Welcome To Choppers","headlineLine1":"Best Hair Salon For","headlineLine2":"Professional Look","body":"Choppers offers high performance customized facials to provide you with visible results.","primaryCta":{"label":"Book Now","href":"/services"},"secondaryCta":{"label":"All Services","href":"/services"},"backgroundImage":"","stylistImage":"https://res.cloudinary.com/dr54mqokd/image/upload/v1/media/hero/Untitled_design_3_xrocar","stylistImageAlt":"A barber trimming the hair of a smiling client in a black cape","watermarkImage":"","backgroundColor":"#0a0a0a","headingColor":"#ffffff","bodyColor":"#9a9a9a","eyebrowColor":"#fbb034","primaryButtonBg":"#c7ff3d","primaryButtonText":"#000000","secondaryButtonColor":"#c7ff3d"},"whoWeAre":{"headingLine1":"WHO","headingLine2":"WE ARE","lead":"A Kathmandu salon built on craft, every cut shaped to the person in the chair, not to a catalogue.","body":"Our stylists train year-round on cuts, colour and care, so the chair you sit in is the same standard every visit.","cta":{"label":"About us","href":"/about-us"},"isPublished":true},"motivation":{"isPublished":true,"lines":["BEAUTY IS POWER","CONFIDENCE IS YOUR","BEST ACCESSORY"]},"gallery":{"heading":"Our Speciality","lines":["Capturing elegance and artistry,","witness the transformations that","define our craft."],"cta":{"label":"View Services","href":"/services"},"images":[{"id":1,"image":"https://res.cloudinary.com/dr54mqokd/image/upload/v1/media/gallery/IMG_0110_u47n7k","alt":"Editorial fashion landing page","order":0},{"id":2,"image":"https://res.cloudinary.com/dr54mqokd/image/upload/v1/media/gallery/IMG_0109_v8djxb","alt":"Studio portfolio layout","order":1},{"id":3,"image":"https://res.cloudinary.com/dr54mqokd/image/upload/v1/media/gallery/IMG_0108_dx1vhq","alt":"Brand identity showcase","order":2},{"id":4,"image":"https://res.cloudinary.com/dr54mqokd/image/upload/v1/media/gallery/IMG_0107_lbxsm0","alt":"Product page concept","order":3},{"id":5,"image":"https://res.cloudinary.com/dr54mqokd/image/upload/v1/media/gallery/IMG_0106_gwdl8a","alt":"Interface design study","order":4},{"id":6,"image":"https://res.cloudinary.com/dr54mqokd/image/upload/v1/media/gallery/IMG_0105_1_xkonn6","alt":"Marketing site exploration","order":5}],"isPublished":true},"classes":{"headingTop":"Moments Captured","headingBottom":"In The Chair","marqueePhrase":"FRESH CUTS â¢ SHARP FADES â¢ CLEAN LINES â¢ EVERY CHAIR â¢ EVERY DAY â¢ REAL MOMENTS","cards":[{"id":1,"slug":"fresh-cut","name":"FreshCut","href":"/services","image":"/images/dribbble/first.jpeg","video":{"uid":"","src":"https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.mp4","thumbnail":"https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.jpg"},"order":0},{"id":2,"slug":"sharp-fade","name":"SharpFade","href":"/services","image":"/images/dribbble/second.jpeg","video":{"uid":"","src":"https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.mp4","thumbnail":"https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.jpg"},"order":1},{"id":3,"slug":"beard-work","name":"BeardWork","href":"/services","image":"/images/dribbble/third.jpeg","video":{"uid":"","src":"https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.mp4","thumbnail":"https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.jpg"},"order":2},{"id":4,"slug":"wash-style","name":"Wash &Style","href":"/services","image":"/images/dribbble/fourth.jpeg","video":{"uid":"","src":"https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.mp4","thumbnail":"https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.jpg"},"order":3},{"id":5,"slug":"colour-day","name":"ColourDay","href":"/services","image":"/images/dribbble/fifth.jpeg","video":{"uid":"","src":"https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.mp4","thumbnail":"https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.jpg"},"order":4},{"id":6,"slug":"clean-lines","name":"CleanLines","href":"/services","image":"/images/dribbble/sixth.jpeg","video":{"uid":"","src":"https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.mp4","thumbnail":"https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.jpg"},"order":5},{"id":7,"slug":"finishing-touch","name":"FinishingTouch","href":"/services","image":"/images/dribbble/first.jpeg","video":{"uid":"","src":"https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.mp4","thumbnail":"https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.jpg"},"order":6},{"id":8,"slug":"book-your-seat","name":"BookYour Seat","href":"/services","image":"/images/dribbble/second.jpeg","video":{"uid":"","src":"https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.mp4","thumbnail":"https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.jpg"},"order":7}]},"ourStory":{"heading":"Our Story","body":"We started as a small beauty salon in Kathmandu, Nepal. Our vision was to create a premium salon experience where beauty meets excellence. We believe in using only the finest products and techniques to help our clients look and feel their absolute best. Our team of expert stylists and beauty professionals are passionate about transforming your look and boosting your confidence with every visit.","cta":{"label":"Learn More","href":"/about-us"},"image":"/images/salon-artist.webp","imageAlt":"Stylist holding a set of makeup brushes"},"asSeenOn":{"heading":"As seen On","quote":"The place with its constant excellence, soul, and style","attribution":"","cta":{"label":"Learn More","href":"/about-us"}},"followUs":{"heading":"Follow Us","body":"Donât miss promotions, follow us for the latest news"},"footer":{"headingLine1":"TIME","headingLine2":"TO","headingLine3":"SHINE","contactHeading":"Contact Us","contactBody":"Donât miss promotions, follow us for the latest news","email":"Ajsalon285@gmail.com","phone":"9705779552, 9841141439","cta":{"label":"Book a seat","href":"/services"}}}
+{
+  "site": {
+    "logo": "https://res.cloudinary.com/dr54mqokd/image/upload/v1/media/brand/logo_ogglgg",
+    "brandName": "AJ Salon",
+    "badgeCaption": "We Don't Keep Our Beauty Secrets",
+    "metaTitle": "AJ Salon - Always Make Room for a Little Beauty in Your Life",
+    "metaDescription": "Premium hair, beauty and spa treatments in Kathmandu, Nepal. Book an appointment or browse the service menu.",
+    "navCta": {
+      "label": "Book Now",
+      "href": "/services"
+    },
+    "copyrightText": "© 2026 AJ Salon. All rights reserved."
+  },
+  "navLinks": [
+    {
+      "id": 1,
+      "label": "Home",
+      "href": "/",
+      "showInHeader": true,
+      "showInFooter": true,
+      "order": 0
+    },
+    {
+      "id": 2,
+      "label": "About Us",
+      "href": "/about-us",
+      "showInHeader": true,
+      "showInFooter": true,
+      "order": 1
+    },
+    {
+      "id": 3,
+      "label": "Service Menu",
+      "href": "/services",
+      "showInHeader": true,
+      "showInFooter": true,
+      "order": 2
+    },
+    {
+      "id": 5,
+      "label": "Contact Us",
+      "href": "/contact",
+      "showInHeader": true,
+      "showInFooter": true,
+      "order": 3
+    }
+  ],
+  "footerLinks": [
+    {
+      "id": 1,
+      "label": "Home",
+      "href": "/",
+      "showInHeader": true,
+      "showInFooter": true,
+      "order": 0
+    },
+    {
+      "id": 2,
+      "label": "About Us",
+      "href": "/about-us",
+      "showInHeader": true,
+      "showInFooter": true,
+      "order": 1
+    },
+    {
+      "id": 3,
+      "label": "Service Menu",
+      "href": "/services",
+      "showInHeader": true,
+      "showInFooter": true,
+      "order": 2
+    },
+    {
+      "id": 5,
+      "label": "Contact Us",
+      "href": "/contact",
+      "showInHeader": true,
+      "showInFooter": true,
+      "order": 3
+    }
+  ],
+  "socialLinks": [
+    {
+      "id": 1,
+      "platform": "facebook",
+      "url": "https://www.facebook.com/jasim.akhatar?mibextid=wwXIfr&rdid=KV5FirDeZbcCjQqQ&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F19sW7z82MG%2F%3Fmibextid%3DwwXIfr#",
+      "label": "Salon on Facebook",
+      "order": 0
+    },
+    {
+      "id": 2,
+      "platform": "instagram",
+      "url": "https://www.instagram.com/newgoldunisexbeautysalon?stkn=bDZjMHV0MWt6OTc5&utm_source=qr",
+      "label": "Salon on Instagram",
+      "order": 1
+    },
+    {
+      "id": 3,
+      "platform": "youtube",
+      "url": "https://www.youtube.com/@ajs6574",
+      "label": "saloon",
+      "order": 2
+    }
+  ],
+  "hero": {
+    "eyebrow": "Welcome To Choppers",
+    "headlineLine1": "Best Hair Salon For",
+    "headlineLine2": "Professional Look",
+    "body": "Choppers offers high performance customized facials to provide you with visible results.",
+    "primaryCta": {
+      "label": "Book Now",
+      "href": "/services"
+    },
+    "secondaryCta": {
+      "label": "All Services",
+      "href": "/services"
+    },
+    "backgroundImage": "",
+    "stylistImage": "https://res.cloudinary.com/dr54mqokd/image/upload/v1/media/hero/Untitled_design_3_xrocar",
+    "stylistImageAlt": "A barber trimming the hair of a smiling client in a black cape",
+    "watermarkImage": "",
+    "backgroundColor": "#0a0a0a",
+    "headingColor": "#ffffff",
+    "bodyColor": "#9a9a9a",
+    "eyebrowColor": "#fbb034",
+    "primaryButtonBg": "#c7ff3d",
+    "primaryButtonText": "#000000",
+    "secondaryButtonColor": "#c7ff3d"
+  },
+  "whoWeAre": {
+    "headingLine1": "WHO",
+    "headingLine2": "WE ARE",
+    "lead": "A Kathmandu salon built on craft, every cut shaped to the person in the chair, not to a catalogue.",
+    "body": "Our stylists train year-round on cuts, colour and care, so the chair you sit in is the same standard every visit.",
+    "cta": {
+      "label": "About us",
+      "href": "/about-us"
+    },
+    "isPublished": true
+  },
+  "motivation": {
+    "isPublished": true,
+    "lines": [
+      "BEAUTY IS POWER",
+      "CONFIDENCE IS YOUR",
+      "BEST ACCESSORY"
+    ]
+  },
+  "gallery": {
+    "heading": "Our Speciality",
+    "lines": [
+      "Capturing elegance and artistry,",
+      "witness the transformations that",
+      "define our craft."
+    ],
+    "cta": {
+      "label": "View Services",
+      "href": "/services"
+    },
+    "images": [
+      {
+        "id": 1,
+        "image": "https://res.cloudinary.com/dr54mqokd/image/upload/v1/media/gallery/IMG_0110_u47n7k",
+        "alt": "Editorial fashion landing page",
+        "order": 0
+      },
+      {
+        "id": 2,
+        "image": "https://res.cloudinary.com/dr54mqokd/image/upload/v1/media/gallery/IMG_0109_v8djxb",
+        "alt": "Studio portfolio layout",
+        "order": 1
+      },
+      {
+        "id": 3,
+        "image": "https://res.cloudinary.com/dr54mqokd/image/upload/v1/media/gallery/IMG_0108_dx1vhq",
+        "alt": "Brand identity showcase",
+        "order": 2
+      },
+      {
+        "id": 4,
+        "image": "https://res.cloudinary.com/dr54mqokd/image/upload/v1/media/gallery/IMG_0107_lbxsm0",
+        "alt": "Product page concept",
+        "order": 3
+      },
+      {
+        "id": 5,
+        "image": "https://res.cloudinary.com/dr54mqokd/image/upload/v1/media/gallery/IMG_0106_gwdl8a",
+        "alt": "Interface design study",
+        "order": 4
+      },
+      {
+        "id": 6,
+        "image": "https://res.cloudinary.com/dr54mqokd/image/upload/v1/media/gallery/IMG_0105_1_xkonn6",
+        "alt": "Marketing site exploration",
+        "order": 5
+      }
+    ],
+    "isPublished": true
+  },
+  "classes": {
+    "headingTop": "Moments Captured",
+    "headingBottom": "In The Chair",
+    "marqueePhrase": "FRESH CUTS • SHARP FADES • CLEAN LINES • EVERY CHAIR • EVERY DAY • REAL MOMENTS",
+    "cards": [
+      {
+        "id": 1,
+        "slug": "fresh-cut",
+        "name": "FreshCut",
+        "href": "/services",
+        "image": "/images/dribbble/first.jpeg",
+        "video": {
+          "uid": "",
+          "src": "https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.mp4",
+          "thumbnail": "https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.jpg"
+        },
+        "order": 0
+      },
+      {
+        "id": 2,
+        "slug": "sharp-fade",
+        "name": "SharpFade",
+        "href": "/services",
+        "image": "/images/dribbble/second.jpeg",
+        "video": {
+          "uid": "",
+          "src": "https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.mp4",
+          "thumbnail": "https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.jpg"
+        },
+        "order": 1
+      },
+      {
+        "id": 3,
+        "slug": "beard-work",
+        "name": "BeardWork",
+        "href": "/services",
+        "image": "/images/dribbble/third.jpeg",
+        "video": {
+          "uid": "",
+          "src": "https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.mp4",
+          "thumbnail": "https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.jpg"
+        },
+        "order": 2
+      },
+      {
+        "id": 4,
+        "slug": "wash-style",
+        "name": "Wash &Style",
+        "href": "/services",
+        "image": "/images/dribbble/fourth.jpeg",
+        "video": {
+          "uid": "",
+          "src": "https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.mp4",
+          "thumbnail": "https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.jpg"
+        },
+        "order": 3
+      },
+      {
+        "id": 5,
+        "slug": "colour-day",
+        "name": "ColourDay",
+        "href": "/services",
+        "image": "/images/dribbble/fifth.jpeg",
+        "video": {
+          "uid": "",
+          "src": "https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.mp4",
+          "thumbnail": "https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.jpg"
+        },
+        "order": 4
+      },
+      {
+        "id": 6,
+        "slug": "clean-lines",
+        "name": "CleanLines",
+        "href": "/services",
+        "image": "/images/dribbble/sixth.jpeg",
+        "video": {
+          "uid": "",
+          "src": "https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.mp4",
+          "thumbnail": "https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.jpg"
+        },
+        "order": 5
+      },
+      {
+        "id": 7,
+        "slug": "finishing-touch",
+        "name": "FinishingTouch",
+        "href": "/services",
+        "image": "/images/dribbble/first.jpeg",
+        "video": {
+          "uid": "",
+          "src": "https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.mp4",
+          "thumbnail": "https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.jpg"
+        },
+        "order": 6
+      },
+      {
+        "id": 8,
+        "slug": "book-your-seat",
+        "name": "BookYour Seat",
+        "href": "/services",
+        "image": "/images/dribbble/second.jpeg",
+        "video": {
+          "uid": "",
+          "src": "https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.mp4",
+          "thumbnail": "https://res.cloudinary.com/dr54mqokd/video/upload/v1787366273/media/about/video/8100338-uhd_2160_4096_25fps_1_qyknkj.jpg"
+        },
+        "order": 7
+      }
+    ]
+  },
+  "ourStory": {
+    "heading": "Our Story",
+    "body": "We started as a small beauty salon in Kathmandu, Nepal. Our vision was to create a premium salon experience where beauty meets excellence. We believe in using only the finest products and techniques to help our clients look and feel their absolute best. Our team of expert stylists and beauty professionals are passionate about transforming your look and boosting your confidence with every visit.",
+    "cta": {
+      "label": "Learn More",
+      "href": "/about-us"
+    },
+    "image": "/images/salon-artist.webp",
+    "imageAlt": "Stylist holding a set of makeup brushes"
+  },
+  "asSeenOn": {
+    "heading": "As seen On",
+    "quote": "The place with its constant excellence, soul, and style",
+    "attribution": "",
+    "cta": {
+      "label": "Learn More",
+      "href": "/about-us"
+    }
+  },
+  "followUs": {
+    "heading": "Follow Us",
+    "body": "Don’t miss promotions, follow us for the latest news"
+  },
+  "footer": {
+    "headingLine1": "TIME",
+    "headingLine2": "TO",
+    "headingLine3": "SHINE",
+    "contactHeading": "Contact Us",
+    "contactBody": "Don’t miss promotions, follow us for the latest news",
+    "email": "Ajsalon285@gmail.com",
+    "phone": "9705779552, 9841141439",
+    "cta": {
+      "label": "Book a seat",
+      "href": "/services"
+    }
+  }
+}
