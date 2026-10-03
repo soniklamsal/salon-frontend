@@ -1,4 +1,5 @@
 import type { SiteContent } from "@/lib/types/content-types";
+import fallbackHomepage from "@/lib/data/fallback-homepage.json";
 
 /**
  * Server-side reader for the Django backend.
@@ -8,14 +9,11 @@ import type { SiteContent } from "@/lib/types/content-types";
  * pass, so the layout and the page can each call `getSiteContent()` and only
  * one request leaves the process.
  *
- * Returns `null` when the backend cannot be reached, rather than inventing
- * content. The old behaviour substituted a bundled copy, which is exactly what
- * this removes: a customer must see the salon's real content or a clear
- * loading/updating state, never a made-up hero, gallery or price. Callers
- * decide what a `null` looks like — a page renders `ContentUnavailable`, the
- * layout falls back to a minimal structural chrome so the nav and footer still
- * render. Successful renders are cached (ISR, below), so a brief outage or a
- * Render cold-start keeps serving the last real page rather than nothing.
+ * FALLBACK BEHAVIOR: When the backend is unreachable, returns static fallback
+ * data captured from the live backend. This ensures the site remains functional
+ * and displays real content even during backend maintenance or connectivity issues.
+ * The fallback data is stored in `lib/data/fallback-homepage.json` and should be
+ * updated periodically to reflect current salon information.
  */
 
 const API_BASE = (
@@ -32,6 +30,9 @@ const REVALIDATE_SECONDS = Number(process.env.SALON_API_REVALIDATE ?? 60);
 // request then serves the cached page (or the loading skeleton) while the
 // background revalidation waits for the backend.
 const TIMEOUT_MS = Number(process.env.SALON_API_TIMEOUT_MS ?? 4000);
+
+// Enable/disable fallback data when backend is unavailable
+const USE_FALLBACK_DATA = process.env.NEXT_PUBLIC_USE_FALLBACK_DATA !== "false";
 
 /** The array bands the page and layout iterate. Guaranteed present so a
  *  backend that omits one degrades to an empty section, never a crash. */
@@ -60,13 +61,18 @@ export async function getSiteContent(): Promise<SiteContent | null> {
 
     return normalize((await response.json()) as Partial<SiteContent>);
   } catch (error) {
-    // Warn, and return null. The page shows a loading/updating state and, once
-    // it has rendered once, the cached copy keeps serving.
     console.warn(
       `[content] ${API_BASE}/homepage/ unavailable (${
         error instanceof Error ? error.message : String(error)
-      }) — no cached content to serve yet.`
+      }) — ${USE_FALLBACK_DATA ? "serving fallback data" : "no cached content to serve yet"}.`
     );
+    
+    // Return fallback data when backend is unavailable
+    if (USE_FALLBACK_DATA) {
+      console.info("[content] Using fallback homepage data");
+      return normalize(fallbackHomepage as Partial<SiteContent>);
+    }
+    
     return null;
   }
 }

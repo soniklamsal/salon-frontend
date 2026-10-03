@@ -5,19 +5,18 @@ import type {
   Service,
   TimeSlot,
 } from "@/lib/types/content-types";
+import fallbackBooking from "@/lib/data/fallback-booking.json";
 
 /**
  * Server-side reader for the booking form's options.
  *
- * Mirrors `lib/content.ts`: one request serves the whole form
- * (`/api/v1/booking-config/` returns services, barbers and the eSewa QR), and
- * failure is never fatal — a stopped backend costs the ability to *book*, not
- * the ability to serve the page.
- *
- * The fallback here is deliberately empty rather than invented. Content has a
- * shipped copy to fall back on; a barber does not. Showing a made-up stylist,
- * or a QR that is not the salon's, would take a real payment to the wrong
- * place — so the page says the form is unavailable instead.
+ * FALLBACK BEHAVIOR: When the backend is unavailable, returns static fallback
+ * data with real services and barbers from the last known state. This allows
+ * customers to see available options and pricing even during backend maintenance.
+ * Contact form submissions will be queued (handled by the form itself).
+ * 
+ * The fallback data is stored in `lib/data/fallback-booking.json` and should be
+ * updated periodically.
  */
 
 const API_BASE = (
@@ -26,6 +25,7 @@ const API_BASE = (
 
 const REVALIDATE_SECONDS = Number(process.env.SALON_API_REVALIDATE ?? 60);
 const TIMEOUT_MS = Number(process.env.SALON_API_TIMEOUT_MS ?? 4000);
+const USE_FALLBACK_DATA = process.env.NEXT_PUBLIC_USE_FALLBACK_DATA !== "false";
 
 /**
  * Only the wording is defaulted here, not the data. If the backend is down
@@ -139,15 +139,22 @@ export async function getBookingConfig(): Promise<BookingConfig> {
     console.warn(
       `[booking] ${API_BASE}/booking-config/ unavailable (${
         error instanceof Error ? error.message : String(error)
-      }) — the form will render its unavailable state.`
+      }) — ${USE_FALLBACK_DATA ? "serving fallback data" : "form will show unavailable state"}.`
     );
-    // Empty, never invented. A bundled list of services and barbers was tried
-    // here and is exactly what must not happen: the prices in it were not the
-    // salon's, the stylists were not on shift, and the eSewa QR was blank — so
-    // a customer could be quoted 800 for a cut that costs something else and
-    // sent to pay a deposit with nothing to pay it to. Wording still comes
-    // from DEFAULT_BOOKING_COPY, because the unavailable state has to say
-    // something; only the bookable data is withheld.
+    
+    // Return fallback data when backend is unavailable
+    if (USE_FALLBACK_DATA && fallbackBooking) {
+      console.info("[booking] Using fallback booking data");
+      const fallbackData = fallbackBooking as Partial<BookingConfig>;
+      return {
+        services: fallbackData.services ?? [],
+        barbers: fallbackData.barbers ?? [],
+        esewa: fallbackData.esewa ?? EMPTY_BOOKING_CONFIG.esewa,
+        copy: { ...DEFAULT_BOOKING_COPY, ...fallbackData.copy },
+      };
+    }
+    
+    // Empty config - form will show unavailable state
     return EMPTY_BOOKING_CONFIG;
   }
 }

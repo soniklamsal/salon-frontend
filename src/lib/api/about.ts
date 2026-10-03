@@ -1,13 +1,14 @@
 /**
  * Server-side reader for the About page.
  *
- * Mirrors `lib/api/content.ts`: one request serves the whole page, and a
- * backend that cannot be reached returns `null` rather than a bundled copy.
- * The page renders a loading/updating state for `null`; a successful render is
- * cached (ISR) so a brief outage keeps serving the last real page.
+ * Mirrors `lib/api/content.ts`: one request serves the whole page, and when
+ * the backend cannot be reached, returns fallback data from the last known
+ * good state. The page renders real salon information even during backend
+ * maintenance or connectivity issues.
  */
 
 import type { AboutContent } from "@/lib/types/about-types";
+import fallbackAbout from "@/lib/data/fallback-about.json";
 
 const API_BASE = (
   process.env.NEXT_PUBLIC_SALON_API_URL ?? "http://localhost:8000/api/v1"
@@ -15,6 +16,7 @@ const API_BASE = (
 
 const REVALIDATE_SECONDS = Number(process.env.SALON_API_REVALIDATE ?? 60);
 const TIMEOUT_MS = Number(process.env.SALON_API_TIMEOUT_MS ?? 4000);
+const USE_FALLBACK_DATA = process.env.NEXT_PUBLIC_USE_FALLBACK_DATA !== "false";
 
 /** The array bands the page iterates, guaranteed present so an omitted one
  *  degrades to an empty section rather than a crash. */
@@ -44,8 +46,15 @@ export async function getAboutContent(): Promise<AboutContent | null> {
     console.warn(
       `[about] ${API_BASE}/about/ unavailable (${
         error instanceof Error ? error.message : String(error)
-      }) — no cached content to serve yet.`
+      }) — ${USE_FALLBACK_DATA ? "serving fallback data" : "no cached content to serve yet"}.`
     );
+    
+    // Return fallback data when backend is unavailable
+    if (USE_FALLBACK_DATA) {
+      console.info("[about] Using fallback about data");
+      return normalize(fallbackAbout as Partial<AboutContent>);
+    }
+    
     return null;
   }
 }

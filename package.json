@@ -11,7 +11,8 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "check": "npm run lint && npm run typecheck && npm run test",
-    "check:auth": "node scripts/check-auth.mjs"
+    "check:auth": "node scripts/check-auth.mjs",
+    "update-fallback": "node scripts/update-fallback.js"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
